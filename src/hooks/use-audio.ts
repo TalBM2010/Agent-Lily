@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { MAX_RECORDING_SECONDS } from "@/lib/constants";
+import { createAudioDataUrl } from "@/lib/audio";
 
 type UseAudioReturn = {
   isRecording: boolean;
@@ -23,28 +24,15 @@ export function useAudio(): UseAudioReturn {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
-
-  const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContext();
-    }
-    return audioContextRef.current;
-  }, []);
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
   const unlockAudio = useCallback(() => {
-    const ctx = getAudioContext();
-    if (ctx.state === "suspended") {
-      ctx.resume();
+    // Create a reusable audio element and "warm it up" with a silent play
+    // so the browser marks it as user-gesture-initiated
+    if (!audioElementRef.current) {
+      audioElementRef.current = new Audio();
     }
-    // Play a silent buffer to fully unlock audio on iOS Safari
-    const buffer = ctx.createBuffer(1, 1, 22050);
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(ctx.destination);
-    source.start(0);
-  }, [getAudioContext]);
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {
@@ -111,45 +99,27 @@ export function useAudio(): UseAudioReturn {
     setError(null);
 
     // Stop any current playback
-    if (sourceNodeRef.current) {
-      try {
-        sourceNodeRef.current.stop();
-      } catch {
-        // Already stopped
-      }
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.currentTime = 0;
     }
 
-    const ctx = getAudioContext();
-    const resumePromise =
-      ctx.state === "suspended" ? ctx.resume() : Promise.resolve();
+    const audio = new Audio(createAudioDataUrl(base64));
+    audioElementRef.current = audio;
 
-    resumePromise
-      .then(() => {
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          bytes[i] = binary.charCodeAt(i);
-        }
-        return ctx.decodeAudioData(bytes.buffer.slice(0) as ArrayBuffer);
-      })
-      .then((audioBuffer) => {
-        const source = ctx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(ctx.destination);
-        sourceNodeRef.current = source;
+    audio.onplay = () => setIsPlaying(true);
+    audio.onended = () => setIsPlaying(false);
+    audio.onerror = () => {
+      setIsPlaying(false);
+      setError("Could not play audio");
+    };
 
-        setIsPlaying(true);
-        source.onended = () => {
-          setIsPlaying(false);
-          sourceNodeRef.current = null;
-        };
-        source.start(0);
-      })
-      .catch((err) => {
-        console.error("Audio playback failed:", err);
-        setIsPlaying(false);
-      });
-  }, [getAudioContext]);
+    audio.play().catch((err) => {
+      console.error("Audio playback failed:", err);
+      setIsPlaying(false);
+      setError("Could not play audio");
+    });
+  }, []);
 
   return {
     isRecording,
