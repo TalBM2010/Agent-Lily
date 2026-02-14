@@ -21,6 +21,9 @@ export function filterAIResponse(text: string): string {
       return "Let's talk about something fun! What's your favorite thing to do?";
     }
   }
+  // Strip markdown bold/italic markers — TTS reads them as literal asterisks
+  text = text.replace(/\*+/g, "");
+
   return text;
 }
 

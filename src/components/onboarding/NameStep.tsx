@@ -44,7 +44,8 @@ export function NameStep({ onNext }: NameStepProps) {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder={he.onboarding.nameStep.placeholder}
+        placeholder="My name is..."
+        dir="ltr"
         className="w-full text-center text-2xl py-4 px-6 rounded-2xl border-3 border-purple-200 focus:border-purple-500 focus:outline-none bg-white text-gray-800 placeholder:text-gray-300"
         autoFocus
         maxLength={20}

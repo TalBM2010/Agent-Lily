@@ -29,7 +29,7 @@ function LessonContent() {
 
 export default function LessonPage() {
   return (
-    <main className="max-w-lg mx-auto px-4">
+    <main>
       <Suspense fallback={<FriendlyLoader />}>
         <LessonContent />
       </Suspense>

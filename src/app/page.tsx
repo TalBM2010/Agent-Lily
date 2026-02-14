@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { NameStep } from "@/components/onboarding/NameStep";
 import { AvatarStep } from "@/components/onboarding/AvatarStep";
-import { isOnboarded, saveOnboardingData } from "@/lib/onboarding";
+import { saveOnboardingData } from "@/lib/onboarding";
 
 const DEFAULT_CHILD_ID = "test-child-1";
 
@@ -15,17 +15,6 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("name");
   const [childName, setChildName] = useState("");
-
-  // Lazy check — runs once on first render, no effect needed
-  const [alreadyOnboarded] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return isOnboarded();
-  });
-
-  if (alreadyOnboarded) {
-    router.replace("/topics");
-    return null;
-  }
 
   function handleNameNext(name: string) {
     setChildName(name);

@@ -25,9 +25,10 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       text,
       modelId: "eleven_turbo_v2_5",
       voiceSettings: {
-        stability: 0.6,
+        stability: 0.75,
         similarityBoost: 0.8,
-        style: 0.3,
+        style: 0.15,
+        speed: 0.8,
       },
     });
 

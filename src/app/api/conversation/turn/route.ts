@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       transcript
     );
 
-    // Generate TTS for the response
+    // TTS is the only thing we need to await — DB writes already fire-and-forget in processChildTurn
     let responseAudioBase64: string | null = null;
     try {
       const audioBuffer = await textToSpeech(response);

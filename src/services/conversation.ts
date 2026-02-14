@@ -87,10 +87,6 @@ export async function processChildTurn(
     logger.warn({ lessonId, reason }, "Concerning input from child");
   }
 
-  await prisma.turn.create({
-    data: { lessonId, speaker: "CHILD", text: transcript },
-  });
-
   const topicConfig = LESSON_TOPICS.find((t) => t.id === lesson.topic);
   const knownWords = lesson.child.vocabulary
     .filter((v) => v.isMastered)
@@ -110,6 +106,11 @@ export async function processChildTurn(
   }));
   messages.push({ role: "user", content: transcript });
 
+  // Fire child turn DB write in parallel with AI call (don't block AI on it)
+  const childTurnWrite = prisma.turn
+    .create({ data: { lessonId, speaker: "CHILD", text: transcript } })
+    .catch((error) => logger.error({ error, lessonId }, "Failed to save child turn"));
+
   let response: string;
   try {
     response = await generateResponse(systemPrompt, messages);
@@ -120,12 +121,13 @@ export async function processChildTurn(
 
   response = filterAIResponse(response);
 
-  await prisma.turn.create({
-    data: { lessonId, speaker: "AVATAR", text: response },
-  });
-
+  // Fire-and-forget: avatar turn write + vocab tracking run in background
   const words = transcript.toLowerCase().split(/\s+/).filter(Boolean);
-  await trackVocabulary(lesson.childId, words);
+  Promise.all([
+    prisma.turn.create({ data: { lessonId, speaker: "AVATAR", text: response } }),
+    trackVocabulary(lesson.childId, words),
+    childTurnWrite,
+  ]).catch((error) => logger.error({ error, lessonId }, "Background DB writes failed"));
 
   return { response, isConcerning };
 }
