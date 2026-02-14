@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Speaker {
+  AVATAR
+  CHILD
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  ELEMENTARY
+  INTERMEDIATE
+}
+
+enum AchievementType {
+  STREAK
+  MILESTONE
+  BADGE
+  VOCABULARY
+}
+
+model Parent {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  children  Child[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("parents")
+}
+
+model Child {
+  id             String          @id @default(cuid())
+  name           String
+  age            Int
+  nativeLanguage String          @default("he") @map("native_language")
+  currentLevel   DifficultyLevel @default(BEGINNER) @map("current_level")
+  parentId       String          @map("parent_id")
+  parent         Parent          @relation(fields: [parentId], references: [id])
+  lessons        Lesson[]
+  vocabulary     Vocabulary[]
+  achievements   Achievement[]
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@index([parentId])
+  @@map("children")
+}
+
+model Lesson {
+  id          String          @id @default(cuid())
+  childId     String          @map("child_id")
+  child       Child           @relation(fields: [childId], references: [id])
+  topic       String
+  difficulty  DifficultyLevel @default(BEGINNER)
+  turns       Turn[]
+  score       Int?
+  startedAt   DateTime        @default(now()) @map("started_at")
+  completedAt DateTime?       @map("completed_at")
+
+  @@index([childId])
+  @@index([startedAt])
+  @@map("lessons")
+}
+
+model Turn {
+  id        String   @id @default(cuid())
+  lessonId  String   @map("lesson_id")
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  speaker   Speaker
+  text      String
+  audioUrl  String?  @map("audio_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([lessonId])
+  @@map("turns")
+}
+
+model Vocabulary {
+  id           String   @id @default(cuid())
+  childId      String   @map("child_id")
+  child        Child    @relation(fields: [childId], references: [id])
+  word         String
+  timesSeen    Int      @default(1) @map("times_seen")
+  timesCorrect Int      @default(0) @map("times_correct")
+  isMastered   Boolean  @default(false) @map("is_mastered")
+  lastSeen     DateTime @default(now()) @map("last_seen")
+
+  @@unique([childId, word])
+  @@index([childId])
+  @@map("vocabulary")
+}
+
+model Achievement {
+  id       String          @id @default(cuid())
+  childId  String          @map("child_id")
+  child    Child           @relation(fields: [childId], references: [id])
+  type     AchievementType
+  name     String
+  earnedAt DateTime        @default(now()) @map("earned_at")
+
+  @@index([childId])
+  @@map("achievements")
+}
