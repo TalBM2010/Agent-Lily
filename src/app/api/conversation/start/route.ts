@@ -7,6 +7,8 @@ import { logger } from "@/lib/logger";
 import { bufferToBase64 } from "@/lib/audio";
 import type { LessonTopic } from "@/lib/types";
 
+export const maxDuration = 60;
+
 const startSchema = z.object({
   childId: z.string(),
   topic: z.string(),
