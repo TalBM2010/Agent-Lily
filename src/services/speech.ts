@@ -24,6 +24,7 @@ export async function textToSpeech(text: string): Promise<Buffer> {
     const audioStream = await client.textToSpeech.convert(ELEVENLABS_VOICE_ID, {
       text,
       modelId: "eleven_turbo_v2_5",
+      outputFormat: "mp3_44100_128",
       voiceSettings: {
         stability: 0.75,
         similarityBoost: 0.8,

@@ -7,6 +7,8 @@ import { toApiError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { bufferToBase64 } from "@/lib/audio";
 
+export const maxDuration = 60;
+
 const turnSchema = z.object({
   lessonId: z.string(),
   transcript: z.string().optional(),

@@ -55,10 +55,21 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
 
   const avatar = useAvatar();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const wasSpeakingRef = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns]);
+
+  // Sync avatar state with actual audio playback
+  useEffect(() => {
+    if (isPlaying) {
+      wasSpeakingRef.current = true;
+    } else if (wasSpeakingRef.current) {
+      wasSpeakingRef.current = false;
+      avatar.setIdle();
+    }
+  }, [isPlaying, avatar]);
 
   const handleStart = useCallback(async () => {
     unlockAudio();
@@ -68,8 +79,9 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       avatar.setSpeaking();
       if (result.audioBase64) {
         playAudio(result.audioBase64);
+      } else {
+        avatar.setIdle();
       }
-      setTimeout(() => avatar.setIdle(), 4000);
     } else {
       avatar.setIdle();
     }
@@ -93,7 +105,6 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     if (responseAudio) {
       avatar.setSpeaking();
       playAudio(responseAudio);
-      setTimeout(() => avatar.setIdle(), 5000);
     } else {
       avatar.setIdle();
     }

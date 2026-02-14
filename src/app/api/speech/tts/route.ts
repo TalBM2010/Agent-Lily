@@ -5,6 +5,8 @@ import { toApiError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { bufferToBase64 } from "@/lib/audio";
 
+export const maxDuration = 60;
+
 const ttsSchema = z.object({
   text: z.string().min(1).max(500),
 });

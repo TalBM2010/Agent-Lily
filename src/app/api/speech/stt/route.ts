@@ -4,6 +4,8 @@ import { speechToText } from "@/services/speech";
 import { toApiError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 
+export const maxDuration = 60;
+
 const sttSchema = z.object({
   audioBase64: z.string(),
 });
