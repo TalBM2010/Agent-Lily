@@ -47,6 +47,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     stopRecording,
     playAudio,
     isPlaying,
+    unlockAudio,
   } = useAudio();
 
   const { turns, isLoading, error: convError, startLesson, sendTurn, lessonId } =
@@ -60,6 +61,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   }, [turns]);
 
   const handleStart = useCallback(async () => {
+    unlockAudio();
     avatar.setThinking();
     const result = await startLesson(childId, topic);
     if (result) {
@@ -71,12 +73,13 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     } else {
       avatar.setIdle();
     }
-  }, [childId, topic, startLesson, avatar, playAudio]);
+  }, [childId, topic, startLesson, avatar, playAudio, unlockAudio]);
 
   const handleMicPress = useCallback(async () => {
+    unlockAudio();
     avatar.setListening();
     await startRecording();
-  }, [startRecording, avatar]);
+  }, [startRecording, avatar, unlockAudio]);
 
   const handleMicRelease = useCallback(async () => {
     avatar.setThinking();
