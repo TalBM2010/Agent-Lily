@@ -9,7 +9,7 @@ type UseAudioReturn = {
   error: string | null;
   startRecording: () => Promise<void>;
   stopRecording: () => Promise<Blob | null>;
-  playAudio: (base64: string) => void;
+  playAudio: (base64: string) => Promise<void>;
   isPlaying: boolean;
   unlockAudio: () => void;
 };
@@ -107,7 +107,7 @@ export function useAudio(): UseAudioReturn {
     });
   }, []);
 
-  const playAudio = useCallback((base64: string) => {
+  const playAudio = useCallback(async (base64: string): Promise<void> => {
     setError(null);
 
     // Stop any current playback
@@ -120,35 +120,39 @@ export function useAudio(): UseAudioReturn {
     }
 
     const ctx = getAudioContext();
-    const resumePromise =
-      ctx.state === "suspended" ? ctx.resume() : Promise.resolve();
 
-    resumePromise
-      .then(() => {
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          bytes[i] = binary.charCodeAt(i);
-        }
-        return ctx.decodeAudioData(bytes.buffer.slice(0) as ArrayBuffer);
-      })
-      .then((audioBuffer) => {
-        const source = ctx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(ctx.destination);
-        sourceNodeRef.current = source;
+    try {
+      if (ctx.state === "suspended") {
+        await ctx.resume();
+      }
 
-        setIsPlaying(true);
-        source.onended = () => {
-          setIsPlaying(false);
-          sourceNodeRef.current = null;
-        };
-        source.start(0);
-      })
-      .catch((err) => {
-        console.error("Audio playback failed:", err);
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
+      const audioBuffer = await ctx.decodeAudioData(
+        bytes.buffer.slice(0) as ArrayBuffer
+      );
+
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(ctx.destination);
+      sourceNodeRef.current = source;
+
+      setIsPlaying(true);
+      source.onended = () => {
         setIsPlaying(false);
-      });
+        sourceNodeRef.current = null;
+      };
+      source.start(0);
+    } catch (err) {
+      console.error("Audio playback failed:", err);
+      setIsPlaying(false);
+      setError("Audio playback failed");
+      throw err;
+    }
   }, [getAudioContext]);
 
   return {

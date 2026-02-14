@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, Square } from "lucide-react";
+import { Mic, MicOff, Square, VolumeX } from "lucide-react";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { FriendlyLoader } from "@/components/common/FriendlyLoader";
 import { useAudio } from "@/hooks/use-audio";
@@ -56,6 +56,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   const avatar = useAvatar();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wasSpeakingRef = useRef(false);
+  const [isTextOnly, setIsTextOnly] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -76,10 +77,17 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     avatar.setThinking();
     const result = await startLesson(childId, topic);
     if (result) {
-      avatar.setSpeaking();
       if (result.audioBase64) {
-        playAudio(result.audioBase64);
+        avatar.setSpeaking();
+        try {
+          await playAudio(result.audioBase64);
+          setIsTextOnly(false);
+        } catch {
+          setIsTextOnly(true);
+          avatar.setIdle();
+        }
       } else {
+        setIsTextOnly(true);
         avatar.setIdle();
       }
     } else {
@@ -104,8 +112,15 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     const responseAudio = await sendTurn(blob);
     if (responseAudio) {
       avatar.setSpeaking();
-      playAudio(responseAudio);
+      try {
+        await playAudio(responseAudio);
+        setIsTextOnly(false);
+      } catch {
+        setIsTextOnly(true);
+        avatar.setIdle();
+      }
     } else {
+      setIsTextOnly(true);
       avatar.setIdle();
     }
   }, [stopRecording, sendTurn, playAudio, avatar]);
@@ -190,6 +205,12 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-600 text-xs font-medium">
               {topicEmojis[topic]} {topicLabel}
             </span>
+            {isTextOnly && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 text-xs font-medium">
+                <VolumeX className="w-3 h-3" />
+                {he.lesson.textOnly}
+              </span>
+            )}
           </div>
         </div>
 

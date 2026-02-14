@@ -27,6 +27,7 @@ export const he = {
     you: "את",
     lily: "לילי",
     holdToTalk: "לחצי לדבר",
+    textOnly: "קראי מה לילי כתבה",
     topicLabels: {
       animals: "חיות",
       colors: "צבעים",

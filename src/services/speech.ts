@@ -18,6 +18,22 @@ function getDeepgramClient() {
   return createClient(process.env.DEEPGRAM_API_KEY);
 }
 
+async function readStreamToBuffer(
+  stream: ReadableStream<Uint8Array>
+): Promise<Buffer> {
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let done = false;
+  while (!done) {
+    const result = await reader.read();
+    done = result.done;
+    if (result.value) {
+      chunks.push(result.value);
+    }
+  }
+  return Buffer.concat(chunks);
+}
+
 export async function textToSpeech(text: string): Promise<Buffer> {
   try {
     const client = getElevenLabsClient();
@@ -33,20 +49,17 @@ export async function textToSpeech(text: string): Promise<Buffer> {
       },
     });
 
-    // Read the stream using the reader API
-    const reader = audioStream.getReader();
-    const chunks: Uint8Array[] = [];
-    let done = false;
-    while (!done) {
-      const result = await reader.read();
-      done = result.done;
-      if (result.value) {
-        chunks.push(result.value);
-      }
+    const audioBuffer = await readStreamToBuffer(audioStream);
+
+    if (audioBuffer.length === 0) {
+      logger.error({ text }, "TTS returned empty audio buffer");
+      throw new SpeechError("TTS returned empty audio");
     }
 
-    return Buffer.concat(chunks);
+    logger.info({ textLength: text.length, audioBytes: audioBuffer.length }, "TTS succeeded");
+    return audioBuffer;
   } catch (error) {
+    if (error instanceof SpeechError) throw error;
     logger.error({ error, text }, "TTS failed");
     throw new SpeechError("Failed to generate speech");
   }
