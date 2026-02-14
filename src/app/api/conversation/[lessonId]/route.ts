@@ -28,7 +28,7 @@ export async function GET(
     return NextResponse.json(lesson);
   } catch (error) {
     logger.error({ error }, "GET /api/conversation/[lessonId] failed");
-    const apiError = toApiError(error);
-    return NextResponse.json({ error: apiError }, { status: 500 });
+    const { statusCode, ...apiError } = toApiError(error);
+    return NextResponse.json({ error: apiError }, { status: statusCode });
   }
 }

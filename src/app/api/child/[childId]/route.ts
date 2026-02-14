@@ -27,7 +27,7 @@ export async function PATCH(
     return NextResponse.json({ id: child.id, name: child.name });
   } catch (error) {
     logger.error({ error }, "PATCH /api/child/[childId] failed");
-    const apiError = toApiError(error);
-    return NextResponse.json({ error: apiError }, { status: 500 });
+    const { statusCode, ...apiError } = toApiError(error);
+    return NextResponse.json({ error: apiError }, { status: statusCode });
   }
 }

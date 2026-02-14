@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ audioBase64 });
   } catch (error) {
     logger.error({ error }, "POST /api/speech/tts failed");
-    const apiError = toApiError(error);
-    return NextResponse.json({ error: apiError }, { status: 500 });
+    const { statusCode, ...apiError } = toApiError(error);
+    return NextResponse.json({ error: apiError }, { status: statusCode });
   }
 }

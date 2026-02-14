@@ -37,9 +37,17 @@ export class ValidationError extends AppError {
   }
 }
 
-export function toApiError(error: unknown): { code: string; message: string } {
+export function toApiError(error: unknown): {
+  code: string;
+  message: string;
+  statusCode: number;
+} {
   if (error instanceof AppError) {
-    return { code: error.code, message: error.message };
+    return {
+      code: error.code,
+      message: error.message,
+      statusCode: error.statusCode,
+    };
   }
-  return { code: "INTERNAL_ERROR", message: "Something went wrong" };
+  return { code: "INTERNAL_ERROR", message: "Something went wrong", statusCode: 500 };
 }

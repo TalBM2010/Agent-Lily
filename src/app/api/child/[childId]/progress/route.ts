@@ -13,7 +13,7 @@ export async function GET(
     return NextResponse.json(progress);
   } catch (error) {
     logger.error({ error }, "GET /api/child/[childId]/progress failed");
-    const apiError = toApiError(error);
-    return NextResponse.json({ error: apiError }, { status: 500 });
+    const { statusCode, ...apiError } = toApiError(error);
+    return NextResponse.json({ error: apiError }, { status: statusCode });
   }
 }

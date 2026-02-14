@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ transcript });
   } catch (error) {
     logger.error({ error }, "POST /api/speech/stt failed");
-    const apiError = toApiError(error);
-    return NextResponse.json({ error: apiError }, { status: 500 });
+    const { statusCode, ...apiError } = toApiError(error);
+    return NextResponse.json({ error: apiError }, { status: statusCode });
   }
 }

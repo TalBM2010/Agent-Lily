@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ...result, greetingAudioBase64 });
   } catch (error) {
     logger.error({ error }, "POST /api/conversation/start failed");
-    const apiError = toApiError(error);
-    return NextResponse.json({ error: apiError }, { status: 500 });
+    const { statusCode, ...apiError } = toApiError(error);
+    return NextResponse.json({ error: apiError }, { status: statusCode });
   }
 }
