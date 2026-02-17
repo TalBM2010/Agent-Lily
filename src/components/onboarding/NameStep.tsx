@@ -9,7 +9,7 @@ type NameStepProps = {
 
 export function NameStep({ onNext }: NameStepProps) {
   const [name, setName] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,10 +17,9 @@ export function NameStep({ onNext }: NameStepProps) {
     if (trimmed) onNext(trimmed);
   }
 
-  function scrollToInput() {
-    // Scroll input into view when keyboard opens
+  function scrollToCard() {
     setTimeout(() => {
-      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 300);
   }
 
@@ -35,7 +34,7 @@ export function NameStep({ onNext }: NameStepProps) {
     >
       {/* Lily */}
       <motion.div
-        className="relative mb-4"
+        className="relative mb-3"
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -53,23 +52,25 @@ export function NameStep({ onNext }: NameStepProps) {
       <h1 className="text-2xl font-bold text-gray-800 mb-1 text-center">
         היי! אני לילי 👋
       </h1>
-      <p className="text-base text-purple-600/80 mb-5 text-center">
+      <p className="text-base text-purple-600/80 mb-4 text-center">
         נעים להכיר! מה השם שלך?
       </p>
 
-      {/* Input card */}
-      <div className="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 mb-5">
+      {/* Input card with button inside */}
+      <div 
+        ref={cardRef}
+        className="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50"
+      >
         <input
-          ref={inputRef}
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onFocus={scrollToInput}
-          onClick={scrollToInput}
+          onFocus={scrollToCard}
+          onClick={scrollToCard}
           placeholder="הקלידו את השם..."
           dir="rtl"
           className="
-            w-full text-center text-xl py-3 px-4 
+            w-full text-center text-xl py-3 px-4 mb-3
             rounded-xl border-2 border-purple-100 
             focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-100
             bg-white text-gray-800 placeholder:text-gray-300
@@ -79,27 +80,27 @@ export function NameStep({ onNext }: NameStepProps) {
           autoCapitalize="words"
           maxLength={20}
         />
+        
+        {/* Button inside card */}
+        <motion.button
+          type="submit"
+          disabled={!name.trim()}
+          className={`
+            w-full py-3 rounded-xl text-lg font-bold
+            transition-all duration-300
+            ${name.trim()
+              ? "text-white bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 shadow-md active:scale-95"
+              : "text-gray-400 bg-gray-100 cursor-not-allowed"
+            }
+          `}
+          whileTap={name.trim() ? { scale: 0.97 } : {}}
+        >
+          <span className="flex items-center justify-center gap-2">
+            המשך
+            {name.trim() && <span>→</span>}
+          </span>
+        </motion.button>
       </div>
-
-      {/* Submit button */}
-      <motion.button
-        type="submit"
-        disabled={!name.trim()}
-        className={`
-          px-10 py-4 rounded-full text-lg font-bold
-          transition-all duration-300
-          ${name.trim()
-            ? "text-white bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 shadow-lg shadow-purple-500/30 active:scale-95"
-            : "text-gray-400 bg-gray-200 cursor-not-allowed"
-          }
-        `}
-        whileTap={name.trim() ? { scale: 0.95 } : {}}
-      >
-        <span className="flex items-center gap-2">
-          המשך
-          {name.trim() && <span>→</span>}
-        </span>
-      </motion.button>
     </motion.form>
   );
 }
