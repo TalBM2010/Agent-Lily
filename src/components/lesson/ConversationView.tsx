@@ -611,72 +611,101 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* CHAT AREA */}
+      {/* MAIN CONVERSATION AREA - Centered, compact */}
       {/* ════════════════════════════════════════════════════════════════════ */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-2 overflow-hidden">
         {isLoading && turns.length === 0 && <FriendlyLoader />}
 
-        <div className="max-w-lg mx-auto space-y-4">
-          <AnimatePresence mode="popLayout">
-            {turns.map((turn) => (
-              <motion.div
-                key={turn.id}
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                className={`flex ${turn.speaker === "CHILD" ? "justify-end" : "justify-start"}`}
-              >
-                {turn.speaker === "AVATAR" && (
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center mr-2 shadow-md">
-                    <span className="text-lg">🧚</span>
-                  </div>
-                )}
-                <div
-                  dir={turn.speaker === "AVATAR" ? "ltr" : undefined}
-                  className={`max-w-[80%] px-4 py-3 ${
-                    turn.speaker === "AVATAR"
-                      ? "bg-white text-gray-800 rounded-2xl rounded-tl-md shadow-md"
-                      : "bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl rounded-tr-md shadow-md"
-                  }`}
-                >
-                  {turn.text}
+        {turns.length > 0 && (
+          <div className="w-full max-w-sm">
+            {/* Lily's avatar - centered */}
+            <motion.div 
+              className="flex justify-center mb-3"
+              animate={isPlaying ? { scale: [1, 1.05, 1] } : {}}
+              transition={{ duration: 0.5, repeat: isPlaying ? Infinity : 0 }}
+            >
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center shadow-xl border-4 border-white">
+                  <span className="text-5xl">🧚</span>
                 </div>
-                {turn.speaker === "CHILD" && (
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center ml-2 shadow-md`}>
-                    <span className="text-lg">{childAvatar}</span>
-                  </div>
+                {isPlaying && (
+                  <motion.div
+                    className="absolute -inset-2 rounded-full border-4 border-purple-300"
+                    animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.2, 0.5] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
                 )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+            </motion.div>
 
-          {/* Typing indicator */}
-          <AnimatePresence>
-            {isLoading && turns.length > 0 && (
-              <motion.div
-                className="flex justify-start"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center mr-2 shadow-md">
-                  <span className="text-lg">🧚</span>
+            {/* Latest message from Lily */}
+            {(() => {
+              const lastAvatarTurn = [...turns].reverse().find(t => t.speaker === "AVATAR");
+              const lastChildTurn = [...turns].reverse().find(t => t.speaker === "CHILD");
+              
+              return (
+                <div className="space-y-2">
+                  {/* Lily's speech bubble */}
+                  {lastAvatarTurn && (
+                    <motion.div
+                      key={lastAvatarTurn.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-white rounded-2xl px-4 py-3 shadow-lg text-center"
+                      dir="ltr"
+                    >
+                      <p className="text-gray-800 text-lg">{lastAvatarTurn.text}</p>
+                    </motion.div>
+                  )}
+                  
+                  {/* Child's last response (smaller) */}
+                  {lastChildTurn && (
+                    <motion.div
+                      key={lastChildTurn.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex justify-end"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl px-3 py-2 shadow-md text-sm">
+                          {lastChildTurn.text}
+                        </div>
+                        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow`}>
+                          <span className="text-sm">{childAvatar}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
-                <div className="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-md">
-                  <div className="flex gap-1.5">
-                    {[0, 1, 2].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-2 h-2 rounded-full bg-purple-400"
-                        animate={{ y: [0, -6, 0] }}
-                        transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
-                      />
-                    ))}
+              );
+            })()}
+
+            {/* Typing indicator */}
+            <AnimatePresence>
+              {isLoading && turns.length > 0 && (
+                <motion.div
+                  className="flex justify-center mt-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="bg-white rounded-xl px-4 py-2 shadow-md">
+                    <div className="flex gap-1.5">
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-2 h-2 rounded-full bg-purple-400"
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.12 }}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
 
         <div ref={messagesEndRef} />
       </div>
