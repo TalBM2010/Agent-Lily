@@ -14,6 +14,7 @@ import { useAudio } from "@/hooks/use-audio";
 import { useConversation } from "@/hooks/use-conversation";
 import { useGamification } from "@/hooks/use-gamification";
 import { useAvatar } from "@/hooks/use-avatar";
+import { getOnboardingData } from "@/lib/onboarding";
 import { he } from "@/lib/he";
 import type { LessonTopic } from "@/lib/types";
 
@@ -86,6 +87,14 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
 
   const avatar = useAvatar();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Get child's chosen companion avatar from onboarding
+  const [companionData] = useState(() => {
+    if (typeof window === "undefined") return null;
+    return getOnboardingData();
+  });
+  const companionEmoji = companionData?.avatar || "⭐";
+  const childName = companionData?.childName || "";
   const wasSpeakingRef = useRef(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [starsAnimating, setStarsAnimating] = useState(false);
@@ -212,6 +221,16 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
         <span className="text-sm font-medium text-white/90">{he.avatar.name}</span>
       </div>
       
+      {/* Child's companion watching */}
+      <motion.div 
+        className="absolute bottom-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark"
+        animate={{ y: [0, -4, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span className="text-2xl">{companionEmoji}</span>
+        {childName && <span className="text-sm font-medium text-white/90">{childName}</span>}
+      </motion.div>
+      
       {/* Topic badge */}
       <div className="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
         <span className="text-xl">{topicEmojis[topic]}</span>
@@ -249,26 +268,38 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
               </div>
             )}
 
-            {/* Lily character waving */}
-            <motion.div
-              className="relative"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <span className="text-8xl">🧚</span>
-              <motion.span
-                className="absolute -top-2 -right-2 text-2xl"
-                animate={{ scale: [0, 1, 0], rotate: [0, 15, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+            {/* Lily and companion together */}
+            <div className="flex items-end justify-center gap-4">
+              {/* Child's companion */}
+              <motion.div
+                className="relative"
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
               >
-                ✨
-              </motion.span>
-            </motion.div>
+                <span className="text-6xl">{companionEmoji}</span>
+              </motion.div>
+              
+              {/* Lily character waving */}
+              <motion.div
+                className="relative"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <span className="text-8xl">🧚</span>
+                <motion.span
+                  className="absolute -top-2 -right-2 text-2xl"
+                  animate={{ scale: [0, 1, 0], rotate: [0, 15, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  ✨
+                </motion.span>
+              </motion.div>
+            </div>
 
             {/* Welcome text */}
             <div className="text-center">
               <h2 className="text-2xl font-heading font-bold text-magic mb-2">
-                מוכנה ללמוד {topicLabel}?
+                {childName ? `${childName}, מוכנה ללמוד ${topicLabel}?` : `מוכנה ללמוד ${topicLabel}?`}
               </h2>
               <p className="text-purple-500">לחצי כדי להתחיל! 🎯</p>
             </div>
@@ -363,20 +394,32 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
           <div className="absolute -inset-1 bg-magic opacity-20 rounded-[2rem] blur-xl" />
           
           <div className="relative">
-            {/* Celebration emoji */}
-            <motion.span
-              className="text-8xl inline-block mb-4"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                rotate: [0, -10, 10, 0],
-              }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              🎉
-            </motion.span>
+            {/* Child's companion celebrating */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <motion.span
+                className="text-6xl inline-block"
+                animate={{ 
+                  y: [0, -15, 0],
+                  rotate: [0, 10, -10, 0],
+                }}
+                transition={{ duration: 0.8, delay: 0.3, repeat: 2 }}
+              >
+                {companionEmoji}
+              </motion.span>
+              <motion.span
+                className="text-8xl inline-block"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  rotate: [0, -10, 10, 0],
+                }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                🎉
+              </motion.span>
+            </div>
 
             <h2 className="text-3xl font-heading font-bold text-magic mb-2">
-              כל הכבוד!
+              {childName ? `כל הכבוד ${childName}!` : "כל הכבוד!"}
             </h2>
             <p className="text-purple-600 text-lg mb-6">
               סיימת שיעור ב{topicLabel}!
@@ -526,14 +569,28 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
               </div>
             </div>
 
-            {/* End lesson button */}
-            <button
-              onClick={() => setShowEndConfirm(true)}
-              className="p-2.5 hover:bg-purple-100 rounded-full transition-colors text-purple-400 hover:text-purple-600"
-              title="סיים שיעור"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Child's companion avatar */}
+              <motion.div 
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-100 to-pink-100"
+                animate={{ y: [0, -2, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <span className="text-xl">{companionEmoji}</span>
+                {childName && (
+                  <span className="text-sm font-medium text-purple-600">{childName}</span>
+                )}
+              </motion.div>
+
+              {/* End lesson button */}
+              <button
+                onClick={() => setShowEndConfirm(true)}
+                className="p-2.5 hover:bg-purple-100 rounded-full transition-colors text-purple-400 hover:text-purple-600"
+                title="סיים שיעור"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -565,6 +622,11 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
                 >
                   {turn.text}
                 </div>
+                {turn.speaker === "CHILD" && (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center ml-2 shadow-sm">
+                    <span className="text-sm">{companionEmoji}</span>
+                  </div>
+                )}
               </motion.div>
             ))}
           </AnimatePresence>
