@@ -228,7 +228,7 @@ export async function checkAndAwardAchievements(
     },
   });
 
-  const earnedKeys = new Set(child.achievements.map((a) => a.key));
+  const earnedKeys = new Set(child.achievements.map((a: { key: string }) => a.key));
   const newAchievements: AwardedAchievement[] = [];
   const now = new Date();
   const hour = now.getHours();
@@ -338,7 +338,7 @@ export async function getChildProgress(childId: string): Promise<ChildProgress> 
     starsToNextLevel: next ? next.starsRequired - child.stars : 0,
     currentStreak: child.currentStreak,
     longestStreak: child.longestStreak,
-    achievements: child.achievements.map((a) => a.key),
+    achievements: child.achievements.map((a: { key: string }) => a.key),
     totalLessons: child.totalLessons,
     totalWordsLearned: child.totalWordsLearned,
   };

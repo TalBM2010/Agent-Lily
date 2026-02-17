@@ -22,8 +22,8 @@ export async function GET(
       select: { key: true, earnedAt: true },
     });
 
-    const earnedKeys = new Set(earnedAchievements.map((a) => a.key));
-    const earnedMap = new Map(earnedAchievements.map((a) => [a.key, a.earnedAt]));
+    const earnedKeys = new Set(earnedAchievements.map((a: { key: string; earnedAt: Date }) => a.key));
+    const earnedMap = new Map(earnedAchievements.map((a: { key: string; earnedAt: Date }) => [a.key, a.earnedAt]));
 
     // Build full achievement list with earned status
     const allAchievements = ALL_ACHIEVEMENT_KEYS.map((key) => {

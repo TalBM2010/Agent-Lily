@@ -19,10 +19,10 @@ export async function GET(
     const progress = await getChildProgress(childId);
 
     // Include achievement definitions for earned achievements
-    const achievementsWithDetails = progress.achievements.map((key) => ({
-      key,
-      ...ACHIEVEMENTS[key],
-    }));
+    const achievementsWithDetails = progress.achievements.map((key) => {
+      const { key: _key, ...rest } = ACHIEVEMENTS[key];
+      return { key, ...rest };
+    });
 
     return NextResponse.json({
       ...progress,
