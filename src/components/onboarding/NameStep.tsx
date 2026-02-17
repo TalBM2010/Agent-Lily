@@ -19,21 +19,21 @@ export function NameStep({ onNext }: NameStepProps) {
   return (
     <motion.form
       onSubmit={handleSubmit}
-      className="flex flex-col items-center w-full max-w-sm px-4"
+      className="flex flex-col items-center w-full max-w-sm px-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Lily - centered nicely */}
+      {/* Lily */}
       <motion.div
-        className="relative mb-6"
-        animate={{ y: [0, -6, 0] }}
+        className="relative mb-4"
+        animate={{ y: [0, -5, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
-        <span className="text-6xl">🧚</span>
+        <span className="text-5xl">🧚</span>
         <motion.span 
-          className="absolute -top-1 -right-2 text-lg"
+          className="absolute -top-1 -right-1 text-base"
           animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
@@ -42,15 +42,15 @@ export function NameStep({ onNext }: NameStepProps) {
       </motion.div>
 
       {/* Title */}
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 text-center">
+      <h1 className="text-2xl font-bold text-gray-800 mb-1 text-center">
         היי! אני לילי 👋
       </h1>
-      <p className="text-base text-purple-600/80 mb-6 text-center">
+      <p className="text-base text-purple-600/80 mb-5 text-center">
         נעים להכיר! מה השם שלך?
       </p>
 
       {/* Input card */}
-      <div className="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 mb-6">
+      <div className="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 mb-5">
         <input
           type="text"
           value={name}
@@ -65,6 +65,8 @@ export function NameStep({ onNext }: NameStepProps) {
             transition-all duration-200 font-medium
           "
           autoFocus
+          autoComplete="off"
+          autoCapitalize="words"
           maxLength={20}
         />
       </div>
@@ -74,7 +76,7 @@ export function NameStep({ onNext }: NameStepProps) {
         type="submit"
         disabled={!name.trim()}
         className={`
-          relative px-10 py-4 rounded-full text-lg font-bold
+          px-10 py-4 rounded-full text-lg font-bold
           transition-all duration-300
           ${name.trim()
             ? "text-white bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 shadow-lg shadow-purple-500/30 active:scale-95"
