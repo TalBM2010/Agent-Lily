@@ -89,6 +89,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   const wasSpeakingRef = useRef(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [starsAnimating, setStarsAnimating] = useState(false);
+  const [lessonRecorded, setLessonRecorded] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -104,9 +105,10 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     }
   }, [isPlaying, avatar]);
 
-  // Handle lesson completion
+  // Handle lesson completion - only once!
   useEffect(() => {
-    if (isLessonComplete && !gamificationLoading) {
+    if (isLessonComplete && !lessonRecorded) {
+      setLessonRecorded(true);
       const wordsLearned = Math.floor(turns.filter(t => t.speaker === "CHILD").length / 2);
       setStarsAnimating(true);
       recordLessonComplete({
@@ -116,7 +118,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
         isPerfect: true, // For MVP, all lessons are "perfect"
       });
     }
-  }, [isLessonComplete, gamificationLoading, turns, recordLessonComplete]);
+  }, [isLessonComplete, lessonRecorded, turns, recordLessonComplete]);
 
   const handleStart = useCallback(async () => {
     unlockAudio();
