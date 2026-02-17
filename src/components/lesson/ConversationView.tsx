@@ -95,7 +95,6 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns]);
 
-  // Sync avatar state with actual audio playback
   useEffect(() => {
     if (isPlaying) {
       wasSpeakingRef.current = true;
@@ -105,7 +104,6 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     }
   }, [isPlaying, avatar]);
 
-  // Handle lesson completion - only once!
   useEffect(() => {
     if (isLessonComplete && !lessonRecorded) {
       setLessonRecorded(true);
@@ -115,7 +113,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
         wordsLearned,
         correctAnswers: turns.filter(t => t.speaker === "CHILD").length,
         totalAnswers: turns.filter(t => t.speaker === "CHILD").length,
-        isPerfect: true, // For MVP, all lessons are "perfect"
+        isPerfect: true,
       });
     }
   }, [isLessonComplete, lessonRecorded, turns, recordLessonComplete]);
@@ -149,7 +147,6 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       avatar.setIdle();
       return;
     }
-
     const responseAudio = await sendTurn(blob);
     if (responseAudio) {
       avatar.setSpeaking();
@@ -168,25 +165,68 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   const isMicDisabled = isLoading || isPlaying;
   const topicLabel = he.lesson.topicLabels[topic] || topic;
 
-  // Shared avatar panel
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎨 AVATAR PANEL - Right side magical background
+  // ═══════════════════════════════════════════════════════════════════════════
   const avatarPanel = (
-    <div className="relative overflow-hidden flex items-center justify-center h-[35vh] md:h-full bg-gradient-to-br from-violet-600 via-purple-700 to-indigo-800">
-      {/* Radial overlay for depth */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.08)_0%,_transparent_70%)]" />
+    <div className="relative overflow-hidden flex items-center justify-center h-[35vh] md:h-full bg-gradient-to-br from-purple-600 via-fuchsia-600 to-pink-500">
+      {/* Magical particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-2xl opacity-30"
+            initial={{ 
+              x: `${Math.random() * 100}%`, 
+              y: `${Math.random() * 100}%`,
+              scale: 0.5 + Math.random() * 0.5,
+            }}
+            animate={{ 
+              y: [null, "-20%", null],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{ 
+              duration: 3 + Math.random() * 2, 
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          >
+            ✨
+          </motion.div>
+        ))}
+      </div>
+      
+      {/* Radial glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.15)_0%,_transparent_60%)]" />
+      
+      {/* Avatar */}
       <AvatarDisplay state={avatar.state} topic={topic} />
-      {/* LIVE indicator */}
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md">
-        <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-        <span className="text-xs font-medium text-white/80">{he.avatar.name}</span>
+      
+      {/* Live indicator */}
+      <div className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
+        <motion.span 
+          className="w-2.5 h-2.5 rounded-full bg-green-400"
+          animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        />
+        <span className="text-sm font-medium text-white/90">{he.avatar.name}</span>
+      </div>
+      
+      {/* Topic badge */}
+      <div className="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
+        <span className="text-xl">{topicEmojis[topic]}</span>
+        <span className="text-sm font-medium text-white/90">{topicLabel}</span>
       </div>
     </div>
   );
 
-  // Pre-start state
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🚀 PRE-START STATE
+  // ═══════════════════════════════════════════════════════════════════════════
   if (!lessonId) {
     return (
       <div className="h-screen grid grid-cols-1 md:grid-cols-5">
-        <div className="md:col-span-2 flex flex-col items-center justify-center h-[65vh] md:h-auto bg-white/80 backdrop-blur-xl md:rounded-r-3xl md:border-r md:border-white/50 md:shadow-2xl relative md:order-1 order-2">
+        <div className="md:col-span-2 flex flex-col items-center justify-center h-[65vh] md:h-auto glass relative md:order-1 order-2 p-6">
           {/* Gamification header */}
           {!gamificationLoading && level && (
             <div className="absolute top-4 left-4 right-4">
@@ -201,53 +241,106 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             </div>
           )}
 
-          {displayError && (
-            <p className="text-red-500 text-sm px-4 text-center max-w-sm mb-4">
-              {he.lesson.error}
-            </p>
-          )}
-
-          {/* Waving emoji */}
-          <motion.span
-            className="text-6xl mb-6 block"
-            animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1 }}
-          >
-            👋
-          </motion.span>
-
-          {/* Start button */}
-          <motion.button
-            onClick={handleStart}
-            disabled={isLoading}
-            className="relative px-10 py-4 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xl font-bold rounded-full shadow-xl shadow-purple-500/25 disabled:from-gray-300 disabled:to-gray-400 disabled:shadow-none disabled:cursor-wait"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            {/* Shimmer overlay */}
-            {!isLoading && (
-              <motion.div
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              />
+          {/* Content */}
+          <div className="flex flex-col items-center gap-6 mt-16">
+            {displayError && (
+              <div className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-500 text-sm text-center">{he.lesson.error}</p>
+              </div>
             )}
-            <span className="relative z-10">
-              {isLoading ? he.lesson.startButtonLoading : he.lesson.startButton}
-            </span>
-          </motion.button>
+
+            {/* Lily character waving */}
+            <motion.div
+              className="relative"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <span className="text-8xl">🧚</span>
+              <motion.span
+                className="absolute -top-2 -right-2 text-2xl"
+                animate={{ scale: [0, 1, 0], rotate: [0, 15, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                ✨
+              </motion.span>
+            </motion.div>
+
+            {/* Welcome text */}
+            <div className="text-center">
+              <h2 className="text-2xl font-heading font-bold text-magic mb-2">
+                מוכנה ללמוד {topicLabel}?
+              </h2>
+              <p className="text-purple-500">לחצי כדי להתחיל! 🎯</p>
+            </div>
+
+            {/* Start button */}
+            <motion.button
+              onClick={handleStart}
+              disabled={isLoading}
+              className="relative btn-magic text-xl px-12 py-5"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {/* Shimmer */}
+              {!isLoading && (
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                {isLoading ? (
+                  <>טוען...</>
+                ) : (
+                  <>
+                    בואי נתחיל!
+                    <span className="text-2xl">🚀</span>
+                  </>
+                )}
+              </span>
+            </motion.button>
+          </div>
         </div>
         <div className="md:col-span-3 md:order-2 order-1">{avatarPanel}</div>
       </div>
     );
   }
 
-  // Lesson complete state
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 🎉 LESSON COMPLETE STATE
+  // ═══════════════════════════════════════════════════════════════════════════
   if (isLessonComplete) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-8">
-        {/* Level up modal */}
+      <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-500 via-fuchsia-500 to-pink-500 p-6">
+        {/* Confetti background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-3xl"
+              initial={{ 
+                x: `${Math.random() * 100}%`, 
+                y: "-10%",
+                rotate: 0,
+              }}
+              animate={{ 
+                y: "110%",
+                rotate: 360 * (Math.random() > 0.5 ? 1 : -1),
+              }}
+              transition={{ 
+                duration: 3 + Math.random() * 2, 
+                repeat: Infinity,
+                delay: Math.random() * 3,
+                ease: "linear",
+              }}
+            >
+              {["🎉", "⭐", "✨", "🌟", "💜", "🎊"][Math.floor(Math.random() * 6)]}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Modals */}
         {showLevelUp && newLevel && (
           <LevelUpModal
             level={newLevel}
@@ -255,76 +348,96 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             onClose={closeLevelUp}
           />
         )}
-
-        {/* Achievement popup */}
         {showAchievement && newAchievement && (
-          <AchievementPopup
-            achievement={newAchievement}
-            onClose={closeAchievement}
-          />
+          <AchievementPopup achievement={newAchievement} onClose={closeAchievement} />
         )}
 
+        {/* Content card */}
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-white rounded-3xl p-8 shadow-2xl max-w-md text-center"
+          initial={{ scale: 0.8, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ type: "spring" as const, stiffness: 200, damping: 20 }}
+          className="relative card-magic p-8 max-w-md w-full text-center shadow-magic-lg"
         >
-          <motion.span
-            className="text-7xl block mb-4"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 0.5 }}
-          >
-            🎉
-          </motion.span>
+          {/* Glow effect */}
+          <div className="absolute -inset-1 bg-magic opacity-20 rounded-[2rem] blur-xl" />
+          
+          <div className="relative">
+            {/* Celebration emoji */}
+            <motion.span
+              className="text-8xl inline-block mb-4"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                rotate: [0, -10, 10, 0],
+              }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              🎉
+            </motion.span>
 
-          <h2 className="text-3xl font-bold text-purple-600 mb-2">
-            כל הכבוד!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            סיימת שיעור ב{topicLabel}!
-          </p>
+            <h2 className="text-3xl font-heading font-bold text-magic mb-2">
+              כל הכבוד!
+            </h2>
+            <p className="text-purple-600 text-lg mb-6">
+              סיימת שיעור ב{topicLabel}!
+            </p>
 
-          {/* Stats */}
-          <div className="flex justify-center gap-6 mb-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-500">
-                ⭐ {stars}
-              </div>
-              <div className="text-sm text-gray-500">כוכבים</div>
+            {/* Stats */}
+            <div className="flex justify-center gap-4 mb-8">
+              <motion.div 
+                className="bg-gradient-to-br from-yellow-100 to-amber-100 px-5 py-3 rounded-2xl"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: "spring" as const }}
+              >
+                <div className="text-2xl font-bold text-amber-600">⭐ {stars}</div>
+                <div className="text-xs text-amber-500">כוכבים</div>
+              </motion.div>
+              
+              <motion.div 
+                className="bg-gradient-to-br from-orange-100 to-red-100 px-5 py-3 rounded-2xl"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.4, type: "spring" as const }}
+              >
+                <div className="text-2xl font-bold text-orange-600">🔥 {streak}</div>
+                <div className="text-xs text-orange-500">ימים ברצף</div>
+              </motion.div>
+              
+              {level && (
+                <motion.div 
+                  className="bg-gradient-to-br from-purple-100 to-pink-100 px-5 py-3 rounded-2xl"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.5, type: "spring" as const }}
+                >
+                  <div className="text-2xl">{level.emoji}</div>
+                  <div className="text-xs text-purple-500">{level.nameHe}</div>
+                </motion.div>
+              )}
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-500">
-                🔥 {streak}
-              </div>
-              <div className="text-sm text-gray-500">ימים ברצף</div>
-            </div>
-            {level && (
-              <div className="text-center">
-                <div className="text-3xl">{level.emoji}</div>
-                <div className="text-sm text-gray-500">{level.nameHe}</div>
-              </div>
-            )}
+
+            {/* Next lesson button */}
+            <motion.a
+              href="/topics"
+              className="inline-block w-full btn-magic text-xl py-5"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              לשיעור הבא! 🚀
+            </motion.a>
           </div>
-
-          {/* Back button */}
-          <motion.a
-            href="/topics"
-            className="inline-block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 
-                       text-white text-xl font-bold rounded-full
-                       shadow-lg hover:shadow-xl"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            לשיעור הבא! 🚀
-          </motion.a>
         </motion.div>
       </div>
     );
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 💬 ACTIVE LESSON STATE
+  // ═══════════════════════════════════════════════════════════════════════════
   return (
     <div className="h-screen grid grid-cols-1 md:grid-cols-5">
-      {/* Level up modal */}
+      {/* Modals */}
       {showLevelUp && newLevel && (
         <LevelUpModal
           level={newLevel}
@@ -332,13 +445,8 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
           onClose={closeLevelUp}
         />
       )}
-
-      {/* Achievement popup */}
       {showAchievement && newAchievement && (
-        <AchievementPopup
-          achievement={newAchievement}
-          onClose={closeAchievement}
-        />
+        <AchievementPopup achievement={newAchievement} onClose={closeAchievement} />
       )}
 
       {/* End lesson confirmation */}
@@ -348,30 +456,31 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
+            <div className="absolute inset-0 bg-purple-900/50 backdrop-blur-sm" onClick={() => setShowEndConfirm(false)} />
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 max-w-sm mx-4 shadow-2xl"
+              className="relative card-magic p-6 max-w-sm w-full shadow-magic-lg"
             >
-              <h3 className="text-xl font-bold text-gray-800 mb-2">
+              <h3 className="text-xl font-heading font-bold text-purple-700 mb-2">
                 לסיים את השיעור?
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-purple-500 mb-6">
                 אם תסיימי עכשיו תקבלי את הכוכבים שצברת! ⭐
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowEndConfirm(false)}
-                  className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-xl"
+                  className="flex-1 py-3 px-4 bg-purple-100 text-purple-700 font-heading font-bold rounded-xl hover:bg-purple-200 transition-colors"
                 >
                   להמשיך
                 </button>
                 <button
                   onClick={handleEndLesson}
-                  className="flex-1 py-3 px-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl"
+                  className="flex-1 py-3 px-4 btn-magic rounded-xl"
                 >
                   לסיים 🎉
                 </button>
@@ -381,11 +490,14 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
         )}
       </AnimatePresence>
 
-      {/* Left panel — chat */}
-      <div className="md:col-span-2 flex flex-col h-[65vh] md:h-screen bg-white/80 backdrop-blur-xl rounded-3xl md:rounded-none md:rounded-r-3xl border border-white/50 md:border-r md:border-y-0 md:border-l-0 shadow-2xl shadow-purple-500/10 md:order-1 order-2">
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* LEFT PANEL - Chat */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      <div className="md:col-span-2 flex flex-col h-[65vh] md:h-screen glass md:rounded-none md:rounded-r-3xl shadow-magic-lg md:order-1 order-2">
+        
         {/* Gamification header */}
         {!gamificationLoading && level && (
-          <div className="px-4 pt-3">
+          <div className="px-4 pt-4">
             <GamificationHeader
               stars={stars}
               streak={streak}
@@ -398,23 +510,26 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
           </div>
         )}
 
-        {/* Chat header — frosted strip */}
-        <div className="px-5 py-3.5 border-b border-gray-100/80 bg-white/60 backdrop-blur-md rounded-t-3xl md:rounded-tr-3xl md:rounded-tl-none">
+        {/* Chat header */}
+        <div className="px-5 py-3 border-b border-purple-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                <h2 className="text-lg font-bold text-purple-700">{he.avatar.name}</h2>
+              <div className="w-10 h-10 rounded-full bg-magic flex items-center justify-center">
+                <span className="text-lg">🧚</span>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-600 text-xs font-medium">
-                {topicEmojis[topic]} {topicLabel}
-              </span>
+              <div>
+                <h2 className="font-heading font-bold text-purple-700">{he.avatar.name}</h2>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-green-400" />
+                  <span className="text-xs text-purple-400">מקשיבה</span>
+                </div>
+              </div>
             </div>
 
             {/* End lesson button */}
             <button
               onClick={() => setShowEndConfirm(true)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+              className="p-2.5 hover:bg-purple-100 rounded-full transition-colors text-purple-400 hover:text-purple-600"
               title="סיים שיעור"
             >
               <X className="w-5 h-5" />
@@ -423,7 +538,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
           {isLoading && turns.length === 0 && <FriendlyLoader />}
 
           <AnimatePresence mode="popLayout">
@@ -436,16 +551,16 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
                 className={`flex ${turn.speaker === "CHILD" ? "justify-end" : "justify-start"}`}
               >
                 {turn.speaker === "AVATAR" && (
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-2 mt-1 text-sm">
-                    {topicEmojis[topic]}
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-magic flex items-center justify-center mr-2 shadow-sm">
+                    <span className="text-sm">🧚</span>
                   </div>
                 )}
                 <div
                   dir={turn.speaker === "AVATAR" ? "ltr" : undefined}
-                  className={`max-w-[80%] px-4 py-2.5 text-sm leading-relaxed ${
+                  className={`max-w-[80%] px-4 py-3 font-english ${
                     turn.speaker === "AVATAR"
-                      ? "bg-purple-50 border border-purple-100 text-purple-900 rounded-2xl rounded-tl-md"
-                      : "bg-gradient-to-br from-blue-500 to-indigo-500 text-white rounded-2xl rounded-tr-md shadow-md shadow-blue-500/20"
+                      ? "bg-white border border-purple-100 text-purple-800 rounded-2xl rounded-tl-md shadow-sm"
+                      : "bg-magic text-white rounded-2xl rounded-tr-md shadow-magic"
                   }`}
                 >
                   {turn.text}
@@ -462,13 +577,12 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mr-2 mt-1 text-sm">
-                  {topicEmojis[topic]}
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-magic flex items-center justify-center mr-2 shadow-sm">
+                  <span className="text-sm">🧚</span>
                 </div>
-                <div className="bg-purple-50 border border-purple-100 rounded-2xl rounded-tl-md px-4 py-3">
-                  <div className="flex gap-1">
+                <div className="bg-white border border-purple-100 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm">
+                  <div className="flex gap-1.5">
                     {[0, 1, 2].map((i) => (
                       <motion.div
                         key={i}
@@ -478,7 +592,6 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
                           duration: 0.6,
                           repeat: Infinity,
                           delay: i * 0.15,
-                          ease: "easeInOut",
                         }}
                       />
                     ))}
@@ -493,55 +606,79 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
 
         {/* Error */}
         {displayError && (
-          <p className="text-red-500 text-xs px-5 text-center">
-            {he.lesson.error}
-          </p>
+          <div className="px-4 pb-2">
+            <div className="px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-red-500 text-sm text-center">{he.lesson.error}</p>
+            </div>
+          </div>
         )}
 
-        {/* Footer — mic area */}
-        <div className="flex flex-col items-center gap-2 py-4 border-t border-gray-100/80 bg-white/60 backdrop-blur-md rounded-b-3xl md:rounded-br-3xl md:rounded-bl-none">
+        {/* ════════════════════════════════════════════════════════════════ */}
+        {/* MIC BUTTON AREA */}
+        {/* ════════════════════════════════════════════════════════════════ */}
+        <div className="flex flex-col items-center gap-3 py-6 border-t border-purple-100 bg-white/50">
           <div className="relative">
-            {/* Recording pulse ring */}
-            {isRecording && (
+            {/* Outer glow ring when idle */}
+            {!isRecording && !isMicDisabled && (
               <motion.div
-                className="absolute -inset-3 rounded-full bg-red-400/30"
-                animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
-                transition={{ duration: 1.2, repeat: Infinity }}
+                className="absolute -inset-4 rounded-full bg-purple-400/20"
+                animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+                transition={{ duration: 2, repeat: Infinity }}
               />
             )}
+            
+            {/* Recording pulse rings */}
+            {isRecording && (
+              <>
+                <motion.div
+                  className="absolute -inset-4 rounded-full bg-red-400/30"
+                  animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                />
+                <motion.div
+                  className="absolute -inset-4 rounded-full bg-red-400/30"
+                  animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
+                />
+              </>
+            )}
 
+            {/* The mic button */}
             <motion.button
-              className={`relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg ${
-                isRecording
-                  ? "bg-red-500"
+              className={`
+                relative w-20 h-20 rounded-full flex items-center justify-center shadow-lg
+                ${isRecording
+                  ? "bg-gradient-to-br from-red-500 to-rose-600 shadow-red-500/30"
                   : isMicDisabled
-                    ? "bg-gray-300 cursor-not-allowed"
-                    : "bg-gradient-to-br from-purple-500 to-indigo-500 shadow-purple-500/25"
-              }`}
+                    ? "bg-purple-200 cursor-not-allowed"
+                    : "btn-magic shadow-purple-500/30"
+                }
+              `}
               whileHover={!isMicDisabled && !isRecording ? { scale: 1.1 } : {}}
-              whileTap={!isMicDisabled ? { scale: 0.95 } : {}}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              whileTap={!isMicDisabled ? { scale: 0.9 } : {}}
               onClick={isRecording ? handleMicRelease : handleMicPress}
               disabled={isMicDisabled && !isRecording}
-              aria-label={isRecording ? he.mic.stopRecording : he.mic.startRecording}
             >
               {isRecording ? (
-                <Square className="w-6 h-6" />
+                <Square className="w-7 h-7 text-white" />
               ) : isMicDisabled ? (
-                <MicOff className="w-6 h-6" />
+                <MicOff className="w-7 h-7 text-purple-400" />
               ) : (
-                <Mic className="w-6 h-6" />
+                <Mic className="w-7 h-7 text-white" />
               )}
             </motion.button>
           </div>
 
-          <span className="text-xs text-gray-400 font-medium">
-            {he.lesson.holdToTalk}
+          {/* Instruction text */}
+          <span className={`text-sm font-medium ${isRecording ? "text-red-500" : "text-purple-400"}`}>
+            {isRecording ? "מקליטה... לחצי לשלוח 🎤" : "לחצי לדבר"}
           </span>
         </div>
       </div>
 
-      {/* Right panel — avatar "video feed" */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
+      {/* RIGHT PANEL - Avatar */}
+      {/* ════════════════════════════════════════════════════════════════════ */}
       <div className="md:col-span-3 md:order-2 order-1">{avatarPanel}</div>
     </div>
   );
