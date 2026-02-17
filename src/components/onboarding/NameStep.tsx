@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 
 type NameStepProps = {
@@ -9,11 +9,19 @@ type NameStepProps = {
 
 export function NameStep({ onNext }: NameStepProps) {
   const [name, setName] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = name.trim();
     if (trimmed) onNext(trimmed);
+  }
+
+  function handleFocus() {
+    // Scroll input into view when keyboard opens
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
   }
 
   return (
@@ -52,9 +60,11 @@ export function NameStep({ onNext }: NameStepProps) {
       {/* Input card */}
       <div className="w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 mb-5">
         <input
+          ref={inputRef}
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onFocus={handleFocus}
           placeholder="הקלידו את השם..."
           dir="rtl"
           className="
@@ -64,7 +74,6 @@ export function NameStep({ onNext }: NameStepProps) {
             bg-white text-gray-800 placeholder:text-gray-300
             transition-all duration-200 font-medium
           "
-          autoFocus
           autoComplete="off"
           autoCapitalize="words"
           maxLength={20}
