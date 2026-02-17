@@ -611,101 +611,85 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       </div>
 
       {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* MAIN CONVERSATION AREA - Centered, compact */}
+      {/* MAIN AREA - Current message only, big and clear */}
       {/* ════════════════════════════════════════════════════════════════════ */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-2 overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center px-5">
         {isLoading && turns.length === 0 && <FriendlyLoader />}
 
-        {turns.length > 0 && (
-          <div className="w-full max-w-sm">
-            {/* Lily's avatar - centered */}
-            <motion.div 
-              className="flex justify-center mb-3"
-              animate={isPlaying ? { scale: [1, 1.05, 1] } : {}}
-              transition={{ duration: 0.5, repeat: isPlaying ? Infinity : 0 }}
-            >
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center shadow-xl border-4 border-white">
-                  <span className="text-5xl">🧚</span>
-                </div>
-                {isPlaying && (
+        {turns.length > 0 && (() => {
+          const lastAvatarTurn = [...turns].reverse().find(t => t.speaker === "AVATAR");
+          const lastChildTurn = [...turns].reverse().find(t => t.speaker === "CHILD");
+          // Show child's response if it's newer than Lily's message
+          const lastTurn = turns[turns.length - 1];
+          const showChildResponse = lastTurn?.speaker === "CHILD";
+          
+          return (
+            <div className="w-full max-w-sm">
+              <AnimatePresence mode="wait">
+                {showChildResponse && lastChildTurn ? (
+                  /* Child's response - big and centered */
                   <motion.div
-                    className="absolute -inset-2 rounded-full border-4 border-purple-300"
-                    animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.2, 0.5] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
-                )}
-              </div>
-            </motion.div>
-
-            {/* Latest message from Lily */}
-            {(() => {
-              const lastAvatarTurn = [...turns].reverse().find(t => t.speaker === "AVATAR");
-              const lastChildTurn = [...turns].reverse().find(t => t.speaker === "CHILD");
-              
-              return (
-                <div className="space-y-2">
-                  {/* Lily's speech bubble */}
-                  {lastAvatarTurn && (
-                    <motion.div
-                      key={lastAvatarTurn.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-white rounded-2xl px-4 py-3 shadow-lg text-center"
-                      dir="ltr"
+                    key="child-response"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="text-center"
+                  >
+                    <div className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow-xl border-4 border-white`}>
+                      <span className="text-4xl">{childAvatar}</span>
+                    </div>
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl px-5 py-4 shadow-lg">
+                      <p className="text-xl font-medium">{lastChildTurn.text}</p>
+                    </div>
+                  </motion.div>
+                ) : lastAvatarTurn ? (
+                  /* Lily's message - big and centered */
+                  <motion.div
+                    key="lily-message"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="text-center"
+                  >
+                    <motion.div 
+                      className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center shadow-xl border-4 border-white"
+                      animate={isPlaying ? { scale: [1, 1.08, 1] } : {}}
+                      transition={{ duration: 0.6, repeat: isPlaying ? Infinity : 0 }}
                     >
-                      <p className="text-gray-800 text-lg">{lastAvatarTurn.text}</p>
+                      <span className="text-4xl">🧚</span>
                     </motion.div>
-                  )}
-                  
-                  {/* Child's last response (smaller) */}
-                  {lastChildTurn && (
-                    <motion.div
-                      key={lastChildTurn.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex justify-end"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl px-3 py-2 shadow-md text-sm">
-                          {lastChildTurn.text}
-                        </div>
-                        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow`}>
-                          <span className="text-sm">{childAvatar}</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-              );
-            })()}
+                    <div className="bg-white rounded-2xl px-5 py-4 shadow-lg" dir="ltr">
+                      <p className="text-xl text-gray-800">{lastAvatarTurn.text}</p>
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
 
-            {/* Typing indicator */}
-            <AnimatePresence>
-              {isLoading && turns.length > 0 && (
-                <motion.div
-                  className="flex justify-center mt-3"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <div className="bg-white rounded-xl px-4 py-2 shadow-md">
-                    <div className="flex gap-1.5">
+              {/* Loading indicator */}
+              <AnimatePresence>
+                {isLoading && turns.length > 0 && (
+                  <motion.div
+                    className="flex justify-center mt-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <div className="flex gap-2">
                       {[0, 1, 2].map((i) => (
                         <motion.div
                           key={i}
-                          className="w-2 h-2 rounded-full bg-purple-400"
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.12 }}
+                          className="w-3 h-3 rounded-full bg-purple-400"
+                          animate={{ y: [0, -8, 0] }}
+                          transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
                         />
                       ))}
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })()}
 
         <div ref={messagesEndRef} />
       </div>
