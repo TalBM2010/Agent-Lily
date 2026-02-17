@@ -223,100 +223,62 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
           </motion.div>
         ))}
 
-        {/* Main content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+        {/* Main content - no absolute, proper flex flow */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-5 py-4">
           
-          {/* Gamification stats - subtle top bar */}
-          {!gamificationLoading && level && (
-            <motion.div 
-              className="absolute top-6 left-0 right-0 px-6"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="flex justify-center gap-4">
-                <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full shadow-sm">
-                  <span className="text-xl">⭐</span>
-                  <span className="font-bold text-amber-600">{stars.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full shadow-sm">
-                  <span className="text-xl">🔥</span>
-                  <span className="font-bold text-orange-500">{streak}</span>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full shadow-sm">
-                  <span className="text-xl">{level.emoji}</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Welcome text */}
+          {/* Welcome text - compact */}
           <motion.div
-            className="text-center mb-8"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-center mb-4"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
           >
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
+            <h1 className="text-2xl font-bold text-gray-800 mb-1">
               {childName ? `היי ${childName}!` : "היי!"}
             </h1>
-            <p className="text-lg text-purple-600/80">מוכנים להרפתקה חדשה?</p>
+            <p className="text-base text-purple-600/80">מוכנים להרפתקה חדשה?</p>
           </motion.div>
 
-          {/* Main avatar showcase */}
+          {/* Main avatar showcase - more compact */}
           <motion.div
-            className="relative mb-10"
-            initial={{ opacity: 0, scale: 0.8 }}
+            className="relative mb-6"
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
           >
             {/* Glow effect */}
-            <div className={`absolute -inset-4 bg-gradient-to-br ${avatarGradient} rounded-full blur-2xl opacity-40`} />
+            <div className={`absolute -inset-3 bg-gradient-to-br ${avatarGradient} rounded-full blur-xl opacity-40`} />
             
             {/* Avatar circle */}
             <motion.div
-              className={`relative w-48 h-48 sm:w-56 sm:h-56 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow-2xl border-4 border-white/80`}
-              animate={{ y: [0, -8, 0] }}
+              className={`relative w-36 h-36 rounded-full bg-gradient-to-br ${avatarGradient} flex items-center justify-center shadow-xl border-4 border-white/80`}
+              animate={{ y: [0, -5, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              <span className="text-7xl sm:text-8xl">{childAvatar}</span>
+              <span className="text-6xl">{childAvatar}</span>
             </motion.div>
 
             {/* Lily fairy floating nearby */}
             <motion.div
-              className="absolute -right-4 -bottom-2 sm:right-0 sm:bottom-0"
-              animate={{ 
-                y: [0, -6, 0],
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -right-2 -bottom-1"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             >
-              <div className="relative">
-                <span className="text-5xl sm:text-6xl drop-shadow-lg">🧚</span>
-                {/* Sparkle trail */}
-                <motion.span
-                  className="absolute -top-1 -left-1 text-sm"
-                  animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  ✨
-                </motion.span>
-              </div>
+              <span className="text-4xl drop-shadow-lg">🧚</span>
             </motion.div>
           </motion.div>
 
-          {/* Topic card */}
+          {/* Topic card - compact */}
           <motion.div
-            className="w-full max-w-xs mb-10"
-            initial={{ opacity: 0, y: 20 }}
+            className="w-full max-w-xs mb-6"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.2 }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg border border-white/50">
-              <p className="text-sm text-gray-500 text-center mb-3">היום נלמד על</p>
-              <div className={`flex items-center justify-center gap-3 py-4 px-6 rounded-2xl bg-gradient-to-r ${currentTopic.gradient} shadow-md`}>
-                <span className="text-4xl">{currentTopic.emoji}</span>
-                <span className="text-2xl font-bold text-white drop-shadow">{currentTopic.label}</span>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50">
+              <p className="text-sm text-gray-500 text-center mb-2">היום נלמד על</p>
+              <div className={`flex items-center justify-center gap-3 py-3 px-5 rounded-xl bg-gradient-to-r ${currentTopic.gradient} shadow-md`}>
+                <span className="text-3xl">{currentTopic.emoji}</span>
+                <span className="text-xl font-bold text-white drop-shadow">{currentTopic.label}</span>
               </div>
             </div>
           </motion.div>
@@ -324,7 +286,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
           {/* Error message */}
           {displayError && (
             <motion.div 
-              className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-2xl"
+              className="mb-4 px-4 py-2 bg-red-50 border border-red-200 rounded-xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
@@ -337,57 +299,47 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             onClick={handleStart}
             disabled={isLoading}
             className={`
-              relative px-12 py-5 rounded-full text-xl font-bold text-white
+              relative px-10 py-4 rounded-full text-lg font-bold text-white
               bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500
-              shadow-lg shadow-purple-500/30
-              hover:shadow-xl hover:shadow-purple-500/40
-              transform hover:scale-105 active:scale-95
+              shadow-lg shadow-purple-500/30 active:scale-95
               transition-all duration-200
-              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+              disabled:opacity-50 disabled:cursor-not-allowed
             `}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            whileHover={{ scale: 1.05 }}
+            transition={{ delay: 0.3 }}
             whileTap={{ scale: 0.95 }}
           >
-            {/* Shimmer effect */}
-            {!isLoading && (
-              <motion.div
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                animate={{ x: ["-100%", "100%"] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-              />
-            )}
-            <span className="relative flex items-center gap-3">
+            <span className="flex items-center gap-2">
               {isLoading ? (
-                <>
-                  <motion.span
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  >
-                    ✨
-                  </motion.span>
-                  מתכוננים...
-                </>
+                <>מתכוננים...</>
               ) : (
                 <>
                   בואו נתחיל!
-                  <span className="text-2xl">🚀</span>
+                  <span className="text-xl">🚀</span>
                 </>
               )}
             </span>
           </motion.button>
 
-          {/* Lily's encouragement */}
-          <motion.p
-            className="mt-6 text-purple-500/70 text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-          >
-            לילי מחכה ללמד אותך! ✨
-          </motion.p>
+          {/* Stats row - compact, below button */}
+          {!gamificationLoading && (
+            <motion.div 
+              className="flex items-center gap-3 mt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="flex items-center gap-1 px-3 py-1.5 bg-white/70 rounded-full text-sm">
+                <span>⭐</span>
+                <span className="font-bold text-amber-600">{stars.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center gap-1 px-3 py-1.5 bg-white/70 rounded-full text-sm">
+                <span>🔥</span>
+                <span className="font-bold text-orange-500">{streak}</span>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Modals */}

@@ -28,6 +28,7 @@ export function useAudio(): UseAudioReturn {
   // Create audio element on mount - using HTML5 Audio can help with iOS silent mode
   useEffect(() => {
     const audio = new Audio();
+    // @ts-expect-error - playsInline exists on iOS Safari
     audio.playsInline = true;
     // @ts-expect-error - webkit property for iOS
     audio.webkitPlaysInline = true;
