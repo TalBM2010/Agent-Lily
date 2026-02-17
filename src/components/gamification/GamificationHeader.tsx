@@ -30,17 +30,17 @@ export function GamificationHeader({
 }: GamificationHeaderProps) {
   if (compact) {
     return (
-      <div className="flex items-center justify-between px-4 py-2 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm">
+      <div className="flex items-center justify-between px-4 py-3 glass rounded-2xl shadow-magic">
         <div className="flex items-center gap-3">
           <StarsDisplay stars={stars} animate={animateStars} size="sm" />
           <StreakDisplay streak={streak} animate={animateStreak} size="sm" />
         </div>
         
         {level && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-lg">{level.emoji}</span>
-            <span className="text-sm font-medium text-gray-600">
-              Lv.{level.level}
+          <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full">
+            <span className="text-xl">{level.emoji}</span>
+            <span className="text-sm font-heading font-bold text-purple-700">
+              {level.nameHe}
             </span>
           </div>
         )}
@@ -48,9 +48,9 @@ export function GamificationHeader({
         {onAchievementsClick && (
           <button
             onClick={onAchievementsClick}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2.5 bg-white/50 hover:bg-white/80 rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
           >
-            🏆
+            <span className="text-xl">🏆</span>
           </button>
         )}
       </div>
@@ -58,7 +58,7 @@ export function GamificationHeader({
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg p-4 space-y-4">
+    <div className="card-magic p-5 space-y-4">
       {/* Top row: Stars, Streak, Achievements */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -69,12 +69,10 @@ export function GamificationHeader({
         {onAchievementsClick && (
           <button
             onClick={onAchievementsClick}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400 to-amber-500 
-                       text-white font-bold rounded-full shadow-md
-                       hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+            className="flex items-center gap-2 btn-magic text-base"
           >
             <span>🏆</span>
-            <span className="text-sm">הישגים</span>
+            <span>הישגים</span>
           </button>
         )}
       </div>

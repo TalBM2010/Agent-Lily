@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Level } from "@/lib/gamification/constants";
+import { getNextLevel } from "@/lib/gamification/constants";
 
 interface LevelProgressProps {
   level: Level;
@@ -12,6 +13,7 @@ interface LevelProgressProps {
 
 export function LevelProgress({ level, progress, starsToNext, animate = false }: LevelProgressProps) {
   const [displayProgress, setDisplayProgress] = useState(0);
+  const nextLevel = getNextLevel(level.level);
 
   useEffect(() => {
     if (animate) {
@@ -26,42 +28,65 @@ export function LevelProgress({ level, progress, starsToNext, animate = false }:
   }, [progress, animate]);
 
   return (
-    <div className="w-full">
-      {/* Level badge and name */}
-      <div className="flex items-center justify-between mb-2">
+    <div className="space-y-2">
+      {/* Level info row */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-2xl">{level.emoji}</span>
           <div>
-            <span className="font-bold text-gray-800">{level.nameHe}</span>
-            <span className="text-gray-400 text-sm mr-2"> רמה {level.level}</span>
+            <span className="font-heading font-bold text-purple-700">
+              {level.nameHe}
+            </span>
+            <span className="text-purple-400 mx-2">•</span>
+            <span className="text-purple-500 font-medium">
+              רמה {level.level}
+            </span>
           </div>
         </div>
-        {starsToNext > 0 && (
-          <span className="text-sm text-gray-500">
-            עוד {starsToNext} ⭐ לרמה הבאה
-          </span>
+        
+        {nextLevel && (
+          <div className="flex items-center gap-1.5 text-sm text-purple-400">
+            <span>עוד {starsToNext} ⭐</span>
+            <span>→</span>
+            <span className="text-lg">{nextLevel.emoji}</span>
+          </div>
         )}
       </div>
 
       {/* Progress bar */}
-      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+      <div className="relative h-4 bg-purple-100 rounded-full overflow-hidden shadow-inner">
+        {/* Shimmer effect on track */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+        
+        {/* Progress fill */}
         <div
-          className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 
-                     rounded-full transition-all duration-700 ease-out
-                     relative overflow-hidden"
+          className="absolute inset-y-0 left-0 bg-magic rounded-full transition-all duration-700 ease-out"
           style={{ width: `${displayProgress}%` }}
         >
-          {/* Shimmer effect */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent
-                       animate-shimmer"
-          />
+          {/* Glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/30 to-white/50 rounded-full" />
+          
+          {/* Sparkle at the end */}
+          {displayProgress > 10 && (
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg animate-pulse" />
+          )}
         </div>
+
+        {/* Next level emoji peeking */}
+        {nextLevel && displayProgress > 80 && (
+          <div 
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm opacity-50"
+          >
+            {nextLevel.emoji}
+          </div>
+        )}
       </div>
 
       {/* Progress percentage */}
-      <div className="flex justify-end mt-1">
-        <span className="text-xs text-gray-400">{progress}%</span>
+      <div className="text-center">
+        <span className="text-xs font-medium text-purple-400">
+          {displayProgress}% לרמה הבאה
+        </span>
       </div>
     </div>
   );

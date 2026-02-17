@@ -11,81 +11,120 @@ interface LevelUpModalProps {
 
 export function LevelUpModal({ level, previousLevel, onClose }: LevelUpModalProps) {
   const [showConfetti, setShowConfetti] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Auto-dismiss confetti after animation
-    const timeout = setTimeout(() => {
-      setShowConfetti(false);
-    }, 3000);
+    // Stagger animations
+    const contentTimeout = setTimeout(() => setShowContent(true), 200);
+    const confettiTimeout = setTimeout(() => setShowConfetti(false), 4000);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(contentTimeout);
+      clearTimeout(confettiTimeout);
+    };
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-purple-900/60 backdrop-blur-md"
         onClick={onClose}
       />
 
       {/* Confetti */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 50 }).map((_, i) => (
+          {Array.from({ length: 60 }).map((_, i) => (
             <div
               key={i}
-              className="absolute animate-confetti"
+              className="absolute animate-confetti text-2xl"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: "-10%",
                 animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 2}s`,
+                animationDuration: `${2.5 + Math.random() * 2}s`,
               }}
             >
-              {["🎉", "⭐", "✨", "🌟", "💫"][Math.floor(Math.random() * 5)]}
+              {["🎉", "⭐", "✨", "🌟", "💫", "🎊", "💜"][Math.floor(Math.random() * 7)]}
             </div>
           ))}
         </div>
       )}
 
       {/* Modal content */}
-      <div className="relative bg-white rounded-3xl p-8 shadow-2xl max-w-sm mx-4 animate-modal-pop">
-        {/* Big emoji */}
-        <div className="text-8xl text-center mb-4 animate-bounce">
-          {level.emoji}
-        </div>
+      <div 
+        className={`
+          relative card-magic p-8 max-w-sm w-full mx-4 
+          shadow-magic-lg
+          ${showContent ? "animate-modal-pop" : "opacity-0 scale-75"}
+        `}
+      >
+        {/* Glow ring */}
+        <div className="absolute -inset-1 bg-magic rounded-[2rem] opacity-20 blur-xl animate-pulse" />
+        
+        <div className="relative">
+          {/* Big emoji with animation */}
+          <div className="text-center mb-4">
+            <span 
+              className="text-8xl inline-block animate-bounce drop-shadow-lg"
+              style={{ animationDuration: "1s" }}
+            >
+              {level.emoji}
+            </span>
+          </div>
 
-        {/* Title */}
-        <h2 className="text-3xl font-bold text-center text-purple-600 mb-2">
-          כל הכבוד! 🎉
-        </h2>
+          {/* Sparkles around emoji */}
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 w-32 h-32 pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <span
+                key={i}
+                className="absolute text-xl animate-sparkle"
+                style={{
+                  top: `${50 + 45 * Math.sin((i * 60 * Math.PI) / 180)}%`,
+                  left: `${50 + 45 * Math.cos((i * 60 * Math.PI) / 180)}%`,
+                  animationDelay: `${i * 0.2}s`,
+                }}
+              >
+                ✨
+              </span>
+            ))}
+          </div>
 
-        {/* Level name */}
-        <p className="text-xl text-center text-gray-700 mb-4">
-          עלית לרמה {level.level}!
-        </p>
-        <p className="text-2xl font-bold text-center text-purple-500 mb-6">
-          {level.nameHe}
-        </p>
+          {/* Title */}
+          <h2 className="text-3xl font-heading font-bold text-center text-magic mb-2">
+            כל הכבוד! 🎉
+          </h2>
 
-        {/* Previous level */}
-        {previousLevel && (
-          <p className="text-sm text-center text-gray-400 mb-6">
-            {previousLevel.emoji} {previousLevel.nameHe} → {level.emoji} {level.nameHe}
+          {/* Level number */}
+          <p className="text-xl text-center text-purple-600 font-medium mb-4">
+            עלית לרמה {level.level}!
           </p>
-        )}
+          
+          {/* Level name */}
+          <p className="text-2xl font-heading font-bold text-center text-purple-700 mb-6">
+            {level.nameHe}
+          </p>
 
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 
-                     text-white text-xl font-bold rounded-full
-                     shadow-lg hover:shadow-xl transform hover:scale-105
-                     transition-all duration-200 active:scale-95"
-        >
-          יש! 🚀
-        </button>
+          {/* Previous level transition */}
+          {previousLevel && (
+            <div className="flex items-center justify-center gap-3 text-lg text-purple-400 mb-8">
+              <span>{previousLevel.emoji}</span>
+              <span>{previousLevel.nameHe}</span>
+              <span>→</span>
+              <span>{level.emoji}</span>
+              <span className="text-purple-600 font-medium">{level.nameHe}</span>
+            </div>
+          )}
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="w-full btn-magic text-xl py-4 animate-breathe"
+          >
+            יש! 🚀
+          </button>
+        </div>
       </div>
     </div>
   );

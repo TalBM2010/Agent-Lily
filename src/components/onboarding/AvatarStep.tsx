@@ -10,58 +10,144 @@ type AvatarStepProps = {
   onComplete: (avatar: string) => void;
 };
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, scale: 0.5, rotate: -10 },
+  visible: { 
+    opacity: 1, 
+    scale: 1, 
+    rotate: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 15,
+    },
+  },
+};
+
 export function AvatarStep({ childName, onComplete }: AvatarStepProps) {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
     <motion.div
-      className="flex flex-col items-center gap-8 w-full max-w-sm"
+      className="flex flex-col items-center gap-8 w-full max-w-md"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -30 }}
     >
-      <h1 className="text-3xl font-bold text-purple-600">
-        {childName} 🎉
-      </h1>
-      <p className="text-xl text-gray-600">
-        {he.onboarding.avatarStep.subtitle}
-      </p>
+      {/* Greeting */}
+      <div className="text-center">
+        <motion.h1 
+          className="text-4xl sm:text-5xl font-heading font-bold text-magic mb-3"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200 }}
+        >
+          {childName}! 🎉
+        </motion.h1>
+        <p className="text-xl text-purple-600 font-medium">
+          {he.onboarding.avatarStep.subtitle}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-4 gap-4 w-full">
-        {CHILD_AVATARS.map((avatar, i) => (
+      {/* Avatar grid */}
+      <motion.div 
+        className="grid grid-cols-4 gap-3 sm:gap-4 w-full"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {CHILD_AVATARS.map((avatar) => (
           <motion.button
             key={avatar.emoji}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.06 }}
+            variants={itemVariants}
             onClick={() => setSelected(avatar.emoji)}
+            whileHover={{ scale: 1.1, y: -4 }}
+            whileTap={{ scale: 0.9 }}
             className={`
-              flex flex-col items-center gap-1 p-3 rounded-2xl border-3 transition-all
+              relative flex flex-col items-center gap-1.5 p-3 sm:p-4 
+              rounded-2xl transition-all duration-200
               ${selected === avatar.emoji
-                ? "border-purple-500 bg-purple-100 shadow-md scale-110"
-                : "border-gray-200 bg-white hover:border-purple-300"
+                ? "bg-white shadow-magic-lg ring-4 ring-purple-400 ring-offset-2 scale-110"
+                : "bg-white/80 shadow-magic hover:bg-white"
               }
             `}
           >
-            <span className="text-4xl">{avatar.emoji}</span>
-            <span className="text-xs text-gray-500">{avatar.label}</span>
+            {/* Selected indicator */}
+            {selected === avatar.emoji && (
+              <motion.div
+                className="absolute -top-2 -right-2 w-7 h-7 bg-magic rounded-full flex items-center justify-center shadow-lg"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+              >
+                <span className="text-white text-xs">✓</span>
+              </motion.div>
+            )}
+            
+            {/* Emoji */}
+            <span 
+              className={`
+                text-4xl sm:text-5xl transition-transform duration-200
+                ${selected === avatar.emoji ? "animate-bounce" : ""}
+              `}
+              style={{ animationDuration: selected === avatar.emoji ? "0.5s" : "0s" }}
+            >
+              {avatar.emoji}
+            </span>
+            
+            {/* Label */}
+            <span 
+              className={`
+                text-xs font-medium
+                ${selected === avatar.emoji ? "text-purple-700" : "text-purple-500"}
+              `}
+            >
+              {avatar.label}
+            </span>
           </motion.button>
         ))}
-      </div>
+      </motion.div>
 
+      {/* Start button */}
       <motion.button
         onClick={() => selected && onComplete(selected)}
         disabled={!selected}
         className={`
-          px-10 py-4 text-xl font-bold rounded-full shadow-lg transition-all
+          relative overflow-hidden
+          px-12 py-5 text-xl font-heading font-bold rounded-full
+          transition-all duration-300
           ${selected
-            ? "bg-purple-500 text-white hover:bg-purple-600 active:bg-purple-700 cursor-pointer"
-            : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            ? "btn-magic cursor-pointer"
+            : "bg-purple-200 text-purple-400 cursor-not-allowed shadow-none"
           }
         `}
+        whileHover={selected ? { scale: 1.05 } : {}}
         whileTap={selected ? { scale: 0.95 } : {}}
       >
-        {he.onboarding.avatarStep.start}
+        {/* Shimmer */}
+        {selected && (
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+          />
+        )}
+        
+        <span className="relative z-10 flex items-center gap-2">
+          {he.onboarding.avatarStep.start}
+          {selected && <span>🚀</span>}
+        </span>
       </motion.button>
     </motion.div>
   );

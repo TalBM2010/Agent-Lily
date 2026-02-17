@@ -1,21 +1,126 @@
 @import "tailwindcss";
 
+/* =============================================================================
+   🎨 LILY DESIGN SYSTEM - "Magical English Garden"
+   ============================================================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary - Magic Purple */
+  --lily-purple-50: #faf5ff;
+  --lily-purple-100: #f3e8ff;
+  --lily-purple-200: #e9d5ff;
+  --lily-purple-300: #d8b4fe;
+  --lily-purple-400: #c084fc;
+  --lily-purple-500: #a855f7;
+  --lily-purple-600: #9333ea;
+  --lily-purple-700: #7c3aed;
+  --lily-purple-800: #6b21a8;
+  --lily-purple-900: #581c87;
+
+  /* Secondary - Warm Gold */
+  --lily-gold-50: #fffbeb;
+  --lily-gold-100: #fef3c7;
+  --lily-gold-200: #fde68a;
+  --lily-gold-300: #fcd34d;
+  --lily-gold-400: #fbbf24;
+  --lily-gold-500: #f59e0b;
+  --lily-gold-600: #d97706;
+
+  /* Success - Fresh Green */
+  --lily-green-50: #ecfdf5;
+  --lily-green-100: #d1fae5;
+  --lily-green-200: #a7f3d0;
+  --lily-green-300: #6ee7b7;
+  --lily-green-400: #34d399;
+  --lily-green-500: #10b981;
+  --lily-green-600: #059669;
+
+  /* Accent - Magic Pink */
+  --lily-pink-50: #fdf2f8;
+  --lily-pink-100: #fce7f3;
+  --lily-pink-200: #fbcfe8;
+  --lily-pink-300: #f9a8d4;
+  --lily-pink-400: #f472b6;
+  --lily-pink-500: #ec4899;
+  --lily-pink-600: #db2777;
+
+  /* Neutrals */
+  --lily-gray-50: #f9fafb;
+  --lily-gray-100: #f3f4f6;
+  --lily-gray-200: #e5e7eb;
+  --lily-gray-300: #d1d5db;
+  --lily-gray-400: #9ca3af;
+  --lily-gray-500: #6b7280;
+  --lily-gray-600: #4b5563;
+  --lily-gray-700: #374151;
+  --lily-gray-800: #1f2937;
+  --lily-gray-900: #111827;
+
+  /* Semantic */
+  --background: var(--lily-purple-50);
+  --foreground: var(--lily-gray-800);
+  --card: #ffffff;
+  --card-foreground: var(--lily-gray-800);
+  --primary: var(--lily-purple-600);
+  --primary-foreground: #ffffff;
+  --secondary: var(--lily-gold-500);
+  --secondary-foreground: #ffffff;
+  --success: var(--lily-green-500);
+  --accent: var(--lily-pink-500);
 }
+
+/* =============================================================================
+   🔤 TYPOGRAPHY
+   ============================================================================= */
+
+/* Hebrew Headings - Rubik (bold, playful) */
+.font-heading {
+  font-family: var(--font-rubik), var(--font-heebo), system-ui, sans-serif;
+}
+
+/* Hebrew Body - Heebo (clean, readable) */
+.font-body {
+  font-family: var(--font-heebo), system-ui, sans-serif;
+}
+
+/* English (lessons) - Nunito (friendly, rounded) */
+.font-english {
+  font-family: var(--font-nunito), system-ui, sans-serif;
+}
+
+/* =============================================================================
+   ✨ ANIMATIONS
+   ============================================================================= */
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: scale(1);
+    box-shadow: 0 0 20px var(--lily-purple-400);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.02);
+    box-shadow: 0 0 40px var(--lily-purple-400);
+  }
 }
 
-/* Gamification Animations */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
 @keyframes confetti {
   0% { 
     transform: translateY(0) rotate(0deg); 
@@ -34,14 +139,14 @@
 
 @keyframes modal-pop {
   0% { 
-    transform: scale(0.8); 
+    transform: scale(0.8) translateY(20px); 
     opacity: 0;
   }
-  50% {
-    transform: scale(1.05);
+  60% {
+    transform: scale(1.05) translateY(-5px);
   }
   100% { 
-    transform: scale(1); 
+    transform: scale(1) translateY(0); 
     opacity: 1;
   }
 }
@@ -67,33 +172,246 @@
     opacity: 1;
   }
   100% {
-    transform: translateY(-50px) scale(0.5);
+    transform: translateY(-60px) scale(0.5);
     opacity: 0;
   }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-heebo);
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
-  --animate-confetti: confetti 3s ease-out forwards;
-  --animate-shimmer: shimmer 2s infinite;
-  --animate-modal-pop: modal-pop 0.4s ease-out forwards;
-  --animate-star-burst: star-burst 0.5s ease-out forwards;
-  --animate-fly-up: fly-up 0.8s ease-out forwards;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--lily-purple-400), 
+                0 0 10px var(--lily-purple-400), 
+                0 0 15px var(--lily-purple-400);
+  }
+  50% {
+    box-shadow: 0 0 10px var(--lily-purple-400), 
+                0 0 20px var(--lily-purple-400), 
+                0 0 30px var(--lily-purple-400);
+  }
+}
+
+/* =============================================================================
+   🎯 THEME CONFIGURATION
+   ============================================================================= */
+
+@theme inline {
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  /* Lily Colors */
+  --color-lily-purple: var(--lily-purple-600);
+  --color-lily-gold: var(--lily-gold-500);
+  --color-lily-green: var(--lily-green-500);
+  --color-lily-pink: var(--lily-pink-500);
+  
+  /* Fonts */
+  --font-sans: var(--font-heebo), system-ui, sans-serif;
+  --font-heading: var(--font-rubik), var(--font-heebo), system-ui, sans-serif;
+  --font-english: var(--font-nunito), system-ui, sans-serif;
+  
+  /* Animations */
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-breathe: breathe 3s ease-in-out infinite;
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-confetti: confetti 3s ease-out forwards;
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-modal-pop: modal-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-star-burst: star-burst 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-fly-up: fly-up 0.8s ease-out forwards;
+  --animate-sparkle: sparkle 1.5s ease-in-out infinite;
+  --animate-bounce-in: bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-slide-up: slide-up 0.4s ease-out forwards;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
+  
+  /* Border Radius - More rounded for kids */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-2xl: 2.5rem;
+  --radius-full: 9999px;
+}
+
+/* =============================================================================
+   🌐 BASE STYLES
+   ============================================================================= */
+
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, var(--lily-purple-50) 0%, var(--lily-pink-50) 50%, var(--lily-purple-50) 100%);
   color: var(--foreground);
-  font-family: var(--font-heebo), Arial, Helvetica, sans-serif;
+  font-family: var(--font-heebo), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus styles */
+*:focus-visible {
+  outline: 3px solid var(--lily-purple-400);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* Selection color */
+::selection {
+  background: var(--lily-purple-200);
+  color: var(--lily-purple-900);
+}
+
+/* =============================================================================
+   🧩 UTILITY CLASSES
+   ============================================================================= */
+
+/* Magic gradient backgrounds */
+.bg-magic {
+  background: linear-gradient(135deg, var(--lily-purple-600) 0%, var(--lily-pink-500) 100%);
+}
+
+.bg-magic-soft {
+  background: linear-gradient(135deg, var(--lily-purple-100) 0%, var(--lily-pink-100) 100%);
+}
+
+.bg-success {
+  background: linear-gradient(135deg, var(--lily-green-500) 0%, var(--lily-green-400) 100%);
+}
+
+.bg-gold {
+  background: linear-gradient(135deg, var(--lily-gold-500) 0%, var(--lily-gold-400) 100%);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* Magic shadows */
+.shadow-magic {
+  box-shadow: 
+    0 4px 6px -1px rgba(124, 58, 237, 0.1),
+    0 10px 15px -3px rgba(124, 58, 237, 0.2),
+    0 20px 25px -5px rgba(124, 58, 237, 0.1);
+}
+
+.shadow-magic-lg {
+  box-shadow: 
+    0 10px 15px -3px rgba(124, 58, 237, 0.15),
+    0 20px 25px -5px rgba(124, 58, 237, 0.25),
+    0 40px 50px -10px rgba(124, 58, 237, 0.15);
+}
+
+.shadow-gold {
+  box-shadow: 
+    0 4px 6px -1px rgba(245, 158, 11, 0.2),
+    0 10px 15px -3px rgba(245, 158, 11, 0.3);
+}
+
+/* Text gradients */
+.text-magic {
+  background: linear-gradient(135deg, var(--lily-purple-600) 0%, var(--lily-pink-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effects */
+.glow-purple {
+  box-shadow: 0 0 20px var(--lily-purple-400);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px var(--lily-gold-400);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px var(--lily-green-400);
+}
+
+/* Card styles */
+.card-magic {
+  background: white;
+  border-radius: var(--radius-2xl);
+  box-shadow: 
+    0 4px 6px -1px rgba(124, 58, 237, 0.05),
+    0 10px 15px -3px rgba(124, 58, 237, 0.1);
+  border: 1px solid var(--lily-purple-100);
+}
+
+/* Button base */
+.btn-magic {
+  background: linear-gradient(135deg, var(--lily-purple-600) 0%, var(--lily-pink-500) 100%);
+  color: white;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-full);
+  box-shadow: 
+    0 4px 15px -3px rgba(124, 58, 237, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-magic:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 8px 25px -5px rgba(124, 58, 237, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-magic:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Disabled states */
+.btn-magic:disabled {
+  background: var(--lily-gray-300);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
 }

@@ -17,7 +17,6 @@ export function StarsDisplay({ stars, animate = false, size = "md" }: StarsDispl
     if (animate && stars !== displayStars) {
       setIsAnimating(true);
       
-      // Animate the number counting up
       const diff = stars - displayStars;
       const steps = Math.min(Math.abs(diff), 20);
       const stepValue = diff / steps;
@@ -43,30 +42,31 @@ export function StarsDisplay({ stars, animate = false, size = "md" }: StarsDispl
   }, [stars, animate, displayStars]);
 
   const sizeClasses = {
-    sm: "text-sm px-2 py-1",
-    md: "text-base px-3 py-1.5",
-    lg: "text-xl px-4 py-2",
+    sm: "text-sm px-3 py-1.5 gap-1.5",
+    md: "text-base px-4 py-2 gap-2",
+    lg: "text-xl px-5 py-2.5 gap-2",
   };
 
   const iconSizes = {
-    sm: "text-sm",
-    md: "text-lg",
+    sm: "text-base",
+    md: "text-xl",
     lg: "text-2xl",
   };
 
   return (
     <div
       className={`
-        inline-flex items-center gap-1.5 
-        bg-gradient-to-r from-yellow-400 to-amber-500 
-        text-white font-bold rounded-full shadow-md
+        inline-flex items-center font-heading font-bold
+        bg-gold text-white
+        rounded-full shadow-gold
         ${sizeClasses[size]}
-        ${isAnimating ? "animate-bounce" : ""}
-        transition-transform duration-200
+        ${isAnimating ? "animate-bounce scale-110" : ""}
+        transition-all duration-300 ease-out
+        hover:scale-105 hover:shadow-lg
       `}
     >
-      <span className={`${iconSizes[size]}`}>⭐</span>
-      <span>{formatStars(displayStars)}</span>
+      <span className={`${iconSizes[size]} drop-shadow-md`}>⭐</span>
+      <span className="drop-shadow-sm">{formatStars(displayStars)}</span>
     </div>
   );
 }
