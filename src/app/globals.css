@@ -1,6 +1,26 @@
 @import "tailwindcss";
 
 /* =============================================================================
+   📱 MOBILE VIEWPORT & SAFE AREAS
+   ============================================================================= */
+
+/* Support for iOS safe areas (notch, home indicator) */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Dynamic viewport height for mobile browsers */
+@supports (height: 100dvh) {
+  .h-dvh {
+    height: 100dvh;
+  }
+}
+
+/* =============================================================================
    🎨 LILY DESIGN SYSTEM - "Magical English Garden"
    ============================================================================= */
 

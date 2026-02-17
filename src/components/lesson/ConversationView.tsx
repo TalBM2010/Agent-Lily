@@ -529,7 +529,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   // 💬 ACTIVE LESSON SCREEN
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex flex-col">
+    <div className="h-dvh h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex flex-col overflow-hidden">
       {/* Modals */}
       {showLevelUp && newLevel && (
         <LevelUpModal level={newLevel} previousLevel={previousLevel || undefined} onClose={closeLevelUp} />
@@ -576,38 +576,34 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       </AnimatePresence>
 
       {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* HEADER */}
+      {/* HEADER - Compact */}
       {/* ════════════════════════════════════════════════════════════════════ */}
-      <div className="bg-white/70 backdrop-blur-sm border-b border-white/50 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex-shrink-0 bg-white/70 backdrop-blur-sm border-b border-white/50 px-3 py-2 flex items-center justify-between safe-area-top">
+        <div className="flex items-center gap-2">
           {/* Lily indicator */}
           <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center shadow-md">
-              <span className="text-2xl">🧚</span>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center shadow-md">
+              <span className="text-xl">🧚</span>
             </div>
-            <motion.span
-              className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white" />
           </div>
           <div>
-            <h2 className="font-bold text-gray-800">{he.avatar.name}</h2>
+            <h2 className="font-bold text-gray-800 text-sm">{he.avatar.name}</h2>
             <p className="text-xs text-gray-500">{currentTopic.emoji} {currentTopic.label}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Stars */}
-          <div className="flex items-center gap-1 px-3 py-1.5 bg-amber-50 rounded-full">
-            <span>⭐</span>
+          <div className="flex items-center gap-1 px-2.5 py-1 bg-amber-50 rounded-full">
+            <span className="text-sm">⭐</span>
             <span className="font-bold text-amber-600 text-sm">{stars}</span>
           </div>
           
           {/* End button */}
           <button
             onClick={() => setShowEndConfirm(true)}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -617,7 +613,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       {/* ════════════════════════════════════════════════════════════════════ */}
       {/* CHAT AREA */}
       {/* ════════════════════════════════════════════════════════════════════ */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
         {isLoading && turns.length === 0 && <FriendlyLoader />}
 
         <div className="max-w-lg mx-auto space-y-4">
@@ -695,23 +691,18 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       )}
 
       {/* ════════════════════════════════════════════════════════════════════ */}
-      {/* MIC BUTTON AREA */}
+      {/* MIC BUTTON AREA - Compact */}
       {/* ════════════════════════════════════════════════════════════════════ */}
-      <div className="bg-white/70 backdrop-blur-sm border-t border-white/50 py-6">
-        <div className="flex flex-col items-center gap-3">
+      <div className="flex-shrink-0 bg-white/70 backdrop-blur-sm border-t border-white/50 py-4 safe-area-bottom">
+        <div className="flex flex-col items-center gap-2">
           <div className="relative">
             {/* Pulse rings */}
             {isRecording && (
               <>
                 <motion.div
-                  className="absolute -inset-4 rounded-full bg-red-400/30"
-                  animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                  className="absolute -inset-3 rounded-full bg-red-400/30"
+                  animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
                   transition={{ duration: 1, repeat: Infinity }}
-                />
-                <motion.div
-                  className="absolute -inset-4 rounded-full bg-red-400/30"
-                  animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-                  transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
                 />
               </>
             )}
@@ -719,7 +710,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             {/* Mic button */}
             <motion.button
               className={`
-                relative w-20 h-20 rounded-full flex items-center justify-center shadow-lg
+                relative w-16 h-16 rounded-full flex items-center justify-center shadow-lg
                 ${isRecording
                   ? "bg-gradient-to-br from-red-500 to-rose-600"
                   : isLoading || isPlaying
@@ -733,17 +724,17 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
               disabled={(isLoading || isPlaying) && !isRecording}
             >
               {isRecording ? (
-                <Square className="w-7 h-7 text-white" />
+                <Square className="w-6 h-6 text-white" />
               ) : isLoading || isPlaying ? (
-                <MicOff className="w-7 h-7 text-gray-500" />
+                <MicOff className="w-6 h-6 text-gray-500" />
               ) : (
-                <Mic className="w-7 h-7 text-white" />
+                <Mic className="w-6 h-6 text-white" />
               )}
             </motion.button>
           </div>
 
-          <span className={`text-sm font-medium ${isRecording ? "text-red-500" : "text-gray-500"}`}>
-            {isRecording ? "מקליט... לחצי לשלוח 🎤" : isPlaying ? "לילי מדברת... 🧚" : "לחצי לדבר"}
+          <span className={`text-xs font-medium ${isRecording ? "text-red-500" : "text-gray-500"}`}>
+            {isRecording ? "מקליט... 🎤" : isPlaying ? "לילי מדברת... 🧚" : "לחצי לדבר"}
           </span>
         </div>
       </div>

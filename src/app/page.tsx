@@ -37,7 +37,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 relative overflow-hidden">
+    <main className="h-dvh h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 relative overflow-hidden">
       {/* Subtle background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200/40 rounded-full blur-3xl" />
@@ -71,7 +71,7 @@ export default function OnboardingPage() {
       ))}
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center justify-center px-6 py-16 min-h-screen">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-8 overflow-y-auto safe-area-top safe-area-bottom">
         <AnimatePresence mode="wait">
           {step === "name" ? (
             <NameStep key="name" onNext={handleNameNext} />

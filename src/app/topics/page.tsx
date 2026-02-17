@@ -63,7 +63,7 @@ export default function TopicsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 relative overflow-hidden">
+    <main className="h-dvh h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 relative overflow-hidden flex flex-col">
       {/* Subtle background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-5 w-64 h-64 bg-purple-200/40 rounded-full blur-3xl" />
@@ -96,7 +96,7 @@ export default function TopicsPage() {
       ))}
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center px-5 py-10 min-h-screen">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 py-6 overflow-y-auto safe-area-top safe-area-bottom">
         
         {/* Header with avatar */}
         <motion.div
