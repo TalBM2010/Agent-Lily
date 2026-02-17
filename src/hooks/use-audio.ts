@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { MAX_RECORDING_SECONDS } from "@/lib/constants";
 
 type UseAudioReturn = {
@@ -23,28 +23,34 @@ export function useAudio(): UseAudioReturn {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
-  const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContext();
-    }
-    return audioContextRef.current;
+  // Create audio element on mount - using HTML5 Audio can help with iOS silent mode
+  useEffect(() => {
+    const audio = new Audio();
+    audio.playsInline = true;
+    // @ts-expect-error - webkit property for iOS
+    audio.webkitPlaysInline = true;
+    audioElementRef.current = audio;
+    
+    return () => {
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current = null;
+      }
+    };
   }, []);
 
   const unlockAudio = useCallback(() => {
-    const ctx = getAudioContext();
-    if (ctx.state === "suspended") {
-      ctx.resume();
+    // Play a silent/tiny sound to unlock audio on iOS
+    const audio = audioElementRef.current;
+    if (audio) {
+      // Tiny silent MP3 data URL
+      audio.src = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAgAAAbAAuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAbD/////////";
+      audio.volume = 0.01;
+      audio.play().catch(() => {});
     }
-    // Play a silent buffer to fully unlock audio on iOS Safari
-    const buffer = ctx.createBuffer(1, 1, 22050);
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(ctx.destination);
-    source.start(0);
-  }, [getAudioContext]);
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {
@@ -110,46 +116,33 @@ export function useAudio(): UseAudioReturn {
   const playAudio = useCallback((base64: string) => {
     setError(null);
 
+    const audio = audioElementRef.current;
+    if (!audio) return;
+
     // Stop any current playback
-    if (sourceNodeRef.current) {
-      try {
-        sourceNodeRef.current.stop();
-      } catch {
-        // Already stopped
-      }
-    }
+    audio.pause();
+    audio.currentTime = 0;
 
-    const ctx = getAudioContext();
-    const resumePromise =
-      ctx.state === "suspended" ? ctx.resume() : Promise.resolve();
+    // Set the source as a data URL
+    audio.src = `data:audio/mp3;base64,${base64}`;
+    audio.volume = 1.0;
+    
+    setIsPlaying(true);
+    
+    audio.onended = () => {
+      setIsPlaying(false);
+    };
+    
+    audio.onerror = () => {
+      console.error("Audio playback failed");
+      setIsPlaying(false);
+    };
 
-    resumePromise
-      .then(() => {
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          bytes[i] = binary.charCodeAt(i);
-        }
-        return ctx.decodeAudioData(bytes.buffer.slice(0) as ArrayBuffer);
-      })
-      .then((audioBuffer) => {
-        const source = ctx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(ctx.destination);
-        sourceNodeRef.current = source;
-
-        setIsPlaying(true);
-        source.onended = () => {
-          setIsPlaying(false);
-          sourceNodeRef.current = null;
-        };
-        source.start(0);
-      })
-      .catch((err) => {
-        console.error("Audio playback failed:", err);
-        setIsPlaying(false);
-      });
-  }, [getAudioContext]);
+    audio.play().catch((err) => {
+      console.error("Audio play failed:", err);
+      setIsPlaying(false);
+    });
+  }, []);
 
   return {
     isRecording,
