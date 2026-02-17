@@ -208,31 +208,15 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       {/* Radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.15)_0%,_transparent_60%)]" />
       
-      {/* Avatar */}
-      <AvatarDisplay state={avatar.state} topic={topic} />
+      {/* Avatar - shows child's chosen avatar with floating Lily */}
+      <AvatarDisplay 
+        state={avatar.state} 
+        childAvatar={companionEmoji} 
+        childName={childName}
+      />
       
-      {/* Live indicator */}
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
-        <motion.span 
-          className="w-2.5 h-2.5 rounded-full bg-green-400"
-          animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        />
-        <span className="text-sm font-medium text-white/90">{he.avatar.name}</span>
-      </div>
-      
-      {/* Child's companion watching */}
-      <motion.div 
-        className="absolute bottom-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark"
-        animate={{ y: [0, -4, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <span className="text-2xl">{companionEmoji}</span>
-        {childName && <span className="text-sm font-medium text-white/90">{childName}</span>}
-      </motion.div>
-      
-      {/* Topic badge */}
-      <div className="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
+      {/* Topic badge - bottom left */}
+      <div className="absolute bottom-4 left-4 flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
         <span className="text-xl">{topicEmojis[topic]}</span>
         <span className="text-sm font-medium text-white/90">{topicLabel}</span>
       </div>

@@ -2,28 +2,27 @@
 
 import { motion } from "framer-motion";
 import type { AvatarState } from "@/lib/types";
-import type { LessonTopic } from "@/lib/types";
 import { he } from "@/lib/he";
 
 type AvatarDisplayProps = {
   state: AvatarState;
-  topic?: LessonTopic | null;
+  childAvatar?: string; // The child's chosen avatar emoji
+  childName?: string;
 };
 
-const topicAvatars: Record<LessonTopic, { emoji: string; bg: string }> = {
-  animals: { emoji: "🦁", bg: "from-amber-300 to-orange-400" },
-  colors: { emoji: "🌈", bg: "from-pink-400 to-violet-400" },
-  family: { emoji: "🏠", bg: "from-rose-300 to-pink-400" },
-  food: { emoji: "🧁", bg: "from-yellow-300 to-orange-300" },
-  numbers: { emoji: "🔢", bg: "from-blue-300 to-indigo-400" },
-  body: { emoji: "🤸", bg: "from-green-300 to-teal-400" },
-  clothes: { emoji: "👗", bg: "from-fuchsia-300 to-purple-400" },
-  weather: { emoji: "☀️", bg: "from-sky-300 to-blue-400" },
-  school: { emoji: "📚", bg: "from-emerald-300 to-green-400" },
-  toys: { emoji: "🧸", bg: "from-amber-200 to-yellow-400" },
+// Background colors based on avatar
+const avatarBackgrounds: Record<string, string> = {
+  "🦄": "from-pink-400 to-purple-500",
+  "🐱": "from-amber-300 to-orange-400",
+  "🐼": "from-gray-300 to-gray-500",
+  "⭐": "from-yellow-300 to-amber-400",
+  "🦋": "from-blue-400 to-purple-500",
+  "🐰": "from-pink-300 to-rose-400",
+  "🌈": "from-pink-400 to-violet-400",
+  "🐶": "from-amber-300 to-yellow-500",
 };
 
-const defaultAvatar = { emoji: "🌟", bg: "from-purple-400 to-pink-400" };
+const defaultBg = "from-purple-400 to-pink-400";
 
 const orbConfigs = [
   { size: "w-32 h-32", color: "from-pink-400/30 to-purple-500/20", delay: 0, duration: 7, x: "10%", y: "15%" },
@@ -32,8 +31,9 @@ const orbConfigs = [
   { size: "w-28 h-28", color: "from-blue-400/20 to-indigo-500/15", delay: 1, duration: 9, x: "20%", y: "70%" },
 ];
 
-export function AvatarDisplay({ state, topic }: AvatarDisplayProps) {
-  const avatar = topic ? topicAvatars[topic] : defaultAvatar;
+export function AvatarDisplay({ state, childAvatar, childName }: AvatarDisplayProps) {
+  const avatarEmoji = childAvatar || "⭐";
+  const avatarBg = avatarBackgrounds[avatarEmoji] || defaultBg;
   const stateLabel = he.avatar.stateLabels[state] || "";
 
   return (
@@ -56,7 +56,59 @@ export function AvatarDisplay({ state, topic }: AvatarDisplayProps) {
         ))}
       </div>
 
-      {/* Centered content */}
+      {/* Floating Lily fairy */}
+      <motion.div
+        className="absolute top-8 right-8 md:top-12 md:right-12 z-20"
+        animate={{ 
+          y: [0, -10, 0],
+          rotate: [0, 5, -5, 0],
+        }}
+        transition={{ 
+          duration: 4, 
+          repeat: Infinity, 
+          ease: "easeInOut" 
+        }}
+      >
+        <div className="relative">
+          {/* Sparkle trail */}
+          <motion.span
+            className="absolute -top-2 -left-2 text-lg"
+            animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+          >
+            ✨
+          </motion.span>
+          <motion.span
+            className="absolute -bottom-1 -right-3 text-sm"
+            animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.7 }}
+          >
+            ✨
+          </motion.span>
+          <motion.span
+            className="absolute top-1 -right-4 text-xs"
+            animate={{ opacity: [0, 1, 0], scale: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 1.3 }}
+          >
+            💫
+          </motion.span>
+          
+          {/* Lily */}
+          <span className="text-5xl md:text-6xl drop-shadow-lg">🧚</span>
+        </div>
+        
+        {/* Lily's name badge */}
+        <motion.div 
+          className="mt-1 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <span className="text-xs font-medium text-white/90 drop-shadow">{he.avatar.name}</span>
+        </motion.div>
+      </motion.div>
+
+      {/* Centered content - Child's Avatar */}
       <div className="relative z-10 flex flex-col items-center gap-4 my-auto">
         {/* Avatar glow ring */}
         <div className="relative">
@@ -75,9 +127,9 @@ export function AvatarDisplay({ state, topic }: AvatarDisplayProps) {
             />
           )}
 
-          {/* Avatar circle */}
+          {/* Avatar circle - now shows child's chosen avatar! */}
           <motion.div
-            className={`relative w-64 h-64 md:w-[28rem] md:h-[28rem] rounded-full bg-gradient-to-br ${avatar.bg} flex items-center justify-center shadow-xl shadow-purple-500/20 border-4 border-white/80`}
+            className={`relative w-64 h-64 md:w-[28rem] md:h-[28rem] rounded-full bg-gradient-to-br ${avatarBg} flex items-center justify-center shadow-xl shadow-purple-500/20 border-4 border-white/80`}
             animate={{
               scale:
                 state === "speaking"
@@ -94,7 +146,7 @@ export function AvatarDisplay({ state, topic }: AvatarDisplayProps) {
               ease: "easeInOut",
             }}
           >
-            {/* Topic emoji */}
+            {/* Child's avatar emoji */}
             <motion.span
               className="text-8xl md:text-[12rem] select-none"
               animate={
@@ -110,7 +162,7 @@ export function AvatarDisplay({ state, topic }: AvatarDisplayProps) {
                 ease: "easeInOut",
               }}
             >
-              {avatar.emoji}
+              {avatarEmoji}
             </motion.span>
 
             {/* Speaking mouth indicator */}
@@ -124,10 +176,12 @@ export function AvatarDisplay({ state, topic }: AvatarDisplayProps) {
           </motion.div>
         </div>
 
-        {/* Name */}
-        <p className="text-2xl md:text-3xl font-bold text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
-          {he.avatar.name}
-        </p>
+        {/* Child's name */}
+        {childName && (
+          <p className="text-2xl md:text-3xl font-bold text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>
+            {childName}
+          </p>
+        )}
 
         {/* State label pill */}
         {stateLabel && (
