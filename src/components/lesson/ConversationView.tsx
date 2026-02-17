@@ -190,7 +190,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   // ═══════════════════════════════════════════════════════════════════════════
   if (!lessonId) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 relative overflow-hidden">
+      <div className="fixed inset-0 bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 overflow-hidden">
         {/* Subtle background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-10 left-10 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl" />
@@ -224,7 +224,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
         ))}
 
         {/* Main content */}
-        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 py-10">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
           
           {/* Gamification stats - subtle top bar */}
           {!gamificationLoading && level && (
@@ -406,7 +406,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   // ═══════════════════════════════════════════════════════════════════════════
   if (isLessonComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-purple-500 via-pink-500 to-rose-500 relative overflow-hidden flex items-center justify-center p-6">
+      <div className="fixed inset-0 bg-gradient-to-b from-purple-500 via-pink-500 to-rose-500 overflow-hidden flex items-center justify-center p-6">
         {/* Confetti */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(20)].map((_, i) => (
@@ -529,7 +529,7 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
   // 💬 ACTIVE LESSON SCREEN
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="h-dvh h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex flex-col overflow-hidden">
       {/* Modals */}
       {showLevelUp && newLevel && (
         <LevelUpModal level={newLevel} previousLevel={previousLevel || undefined} onClose={closeLevelUp} />
