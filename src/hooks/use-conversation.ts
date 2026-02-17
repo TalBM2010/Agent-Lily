@@ -9,9 +9,11 @@ type UseConversationReturn = {
   turns: ConversationTurn[];
   isLoading: boolean;
   error: string | null;
+  isLessonComplete: boolean;
   startLesson: (childId: string, topic: LessonTopic) => Promise<{ greeting: string; audioBase64: string | null } | null>;
   sendTurn: (audioBlob: Blob) => Promise<string | null>;
   sendTextTurn: (text: string) => Promise<string | null>;
+  endLesson: () => void;
 };
 
 export function useConversation(): UseConversationReturn {
@@ -19,6 +21,11 @@ export function useConversation(): UseConversationReturn {
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLessonComplete, setIsLessonComplete] = useState(false);
+
+  const endLesson = useCallback(() => {
+    setIsLessonComplete(true);
+  }, []);
 
   const startLesson = useCallback(
     async (
@@ -154,8 +161,10 @@ export function useConversation(): UseConversationReturn {
     turns,
     isLoading,
     error,
+    isLessonComplete,
     startLesson,
     sendTurn,
     sendTextTurn,
+    endLesson,
   };
 }

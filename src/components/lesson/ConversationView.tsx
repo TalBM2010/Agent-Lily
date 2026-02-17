@@ -1,12 +1,18 @@
 "use client";
 
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, Square } from "lucide-react";
+import { Mic, MicOff, Square, X } from "lucide-react";
 import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { FriendlyLoader } from "@/components/common/FriendlyLoader";
+import {
+  GamificationHeader,
+  LevelUpModal,
+  AchievementPopup,
+} from "@/components/gamification";
 import { useAudio } from "@/hooks/use-audio";
 import { useConversation } from "@/hooks/use-conversation";
+import { useGamification } from "@/hooks/use-gamification";
 import { useAvatar } from "@/hooks/use-avatar";
 import { he } from "@/lib/he";
 import type { LessonTopic } from "@/lib/types";
@@ -50,12 +56,39 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     unlockAudio,
   } = useAudio();
 
-  const { turns, isLoading, error: convError, startLesson, sendTurn, lessonId } =
-    useConversation();
+  const { 
+    turns, 
+    isLoading, 
+    error: convError, 
+    startLesson, 
+    sendTurn, 
+    lessonId,
+    isLessonComplete,
+    endLesson,
+  } = useConversation();
+
+  const {
+    stars,
+    level,
+    levelProgress,
+    starsToNextLevel,
+    streak,
+    showLevelUp,
+    newLevel,
+    previousLevel,
+    closeLevelUp,
+    showAchievement,
+    newAchievement,
+    closeAchievement,
+    recordLessonComplete,
+    isLoading: gamificationLoading,
+  } = useGamification(childId);
 
   const avatar = useAvatar();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wasSpeakingRef = useRef(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+  const [starsAnimating, setStarsAnimating] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -70,6 +103,20 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
       avatar.setIdle();
     }
   }, [isPlaying, avatar]);
+
+  // Handle lesson completion
+  useEffect(() => {
+    if (isLessonComplete && !gamificationLoading) {
+      const wordsLearned = Math.floor(turns.filter(t => t.speaker === "CHILD").length / 2);
+      setStarsAnimating(true);
+      recordLessonComplete({
+        wordsLearned,
+        correctAnswers: turns.filter(t => t.speaker === "CHILD").length,
+        totalAnswers: turns.filter(t => t.speaker === "CHILD").length,
+        isPerfect: true, // For MVP, all lessons are "perfect"
+      });
+    }
+  }, [isLessonComplete, gamificationLoading, turns, recordLessonComplete]);
 
   const handleStart = useCallback(async () => {
     unlockAudio();
@@ -110,6 +157,11 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     }
   }, [stopRecording, sendTurn, playAudio, avatar]);
 
+  const handleEndLesson = useCallback(() => {
+    setShowEndConfirm(false);
+    endLesson();
+  }, [endLesson]);
+
   const displayError = audioError || convError;
   const isMicDisabled = isLoading || isPlaying;
   const topicLabel = he.lesson.topicLabels[topic] || topic;
@@ -133,6 +185,19 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     return (
       <div className="h-screen grid grid-cols-1 md:grid-cols-5">
         <div className="md:col-span-2 flex flex-col items-center justify-center h-[65vh] md:h-auto bg-white/80 backdrop-blur-xl md:rounded-r-3xl md:border-r md:border-white/50 md:shadow-2xl relative md:order-1 order-2">
+          {/* Gamification header */}
+          {!gamificationLoading && level && (
+            <div className="absolute top-4 left-4 right-4">
+              <GamificationHeader
+                stars={stars}
+                streak={streak}
+                level={level}
+                levelProgress={levelProgress}
+                starsToNextLevel={starsToNextLevel}
+                compact
+              />
+            </div>
+          )}
 
           {displayError && (
             <p className="text-red-500 text-sm px-4 text-center max-w-sm mb-4">
@@ -176,20 +241,182 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
     );
   }
 
+  // Lesson complete state
+  if (isLessonComplete) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-8">
+        {/* Level up modal */}
+        {showLevelUp && newLevel && (
+          <LevelUpModal
+            level={newLevel}
+            previousLevel={previousLevel || undefined}
+            onClose={closeLevelUp}
+          />
+        )}
+
+        {/* Achievement popup */}
+        {showAchievement && newAchievement && (
+          <AchievementPopup
+            achievement={newAchievement}
+            onClose={closeAchievement}
+          />
+        )}
+
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-3xl p-8 shadow-2xl max-w-md text-center"
+        >
+          <motion.span
+            className="text-7xl block mb-4"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 0.5 }}
+          >
+            🎉
+          </motion.span>
+
+          <h2 className="text-3xl font-bold text-purple-600 mb-2">
+            כל הכבוד!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            סיימת שיעור ב{topicLabel}!
+          </p>
+
+          {/* Stats */}
+          <div className="flex justify-center gap-6 mb-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-yellow-500">
+                ⭐ {stars}
+              </div>
+              <div className="text-sm text-gray-500">כוכבים</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-orange-500">
+                🔥 {streak}
+              </div>
+              <div className="text-sm text-gray-500">ימים ברצף</div>
+            </div>
+            {level && (
+              <div className="text-center">
+                <div className="text-3xl">{level.emoji}</div>
+                <div className="text-sm text-gray-500">{level.nameHe}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Back button */}
+          <motion.a
+            href="/topics"
+            className="inline-block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 
+                       text-white text-xl font-bold rounded-full
+                       shadow-lg hover:shadow-xl"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            לשיעור הבא! 🚀
+          </motion.a>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen grid grid-cols-1 md:grid-cols-5">
+      {/* Level up modal */}
+      {showLevelUp && newLevel && (
+        <LevelUpModal
+          level={newLevel}
+          previousLevel={previousLevel || undefined}
+          onClose={closeLevelUp}
+        />
+      )}
+
+      {/* Achievement popup */}
+      {showAchievement && newAchievement && (
+        <AchievementPopup
+          achievement={newAchievement}
+          onClose={closeAchievement}
+        />
+      )}
+
+      {/* End lesson confirmation */}
+      <AnimatePresence>
+        {showEndConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 max-w-sm mx-4 shadow-2xl"
+            >
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                לסיים את השיעור?
+              </h3>
+              <p className="text-gray-600 mb-4">
+                אם תסיימי עכשיו תקבלי את הכוכבים שצברת! ⭐
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowEndConfirm(false)}
+                  className="flex-1 py-3 px-4 bg-gray-100 text-gray-700 font-medium rounded-xl"
+                >
+                  להמשיך
+                </button>
+                <button
+                  onClick={handleEndLesson}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl"
+                >
+                  לסיים 🎉
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Left panel — chat */}
       <div className="md:col-span-2 flex flex-col h-[65vh] md:h-screen bg-white/80 backdrop-blur-xl rounded-3xl md:rounded-none md:rounded-r-3xl border border-white/50 md:border-r md:border-y-0 md:border-l-0 shadow-2xl shadow-purple-500/10 md:order-1 order-2">
+        {/* Gamification header */}
+        {!gamificationLoading && level && (
+          <div className="px-4 pt-3">
+            <GamificationHeader
+              stars={stars}
+              streak={streak}
+              level={level}
+              levelProgress={levelProgress}
+              starsToNextLevel={starsToNextLevel}
+              animateStars={starsAnimating}
+              compact
+            />
+          </div>
+        )}
+
         {/* Chat header — frosted strip */}
         <div className="px-5 py-3.5 border-b border-gray-100/80 bg-white/60 backdrop-blur-md rounded-t-3xl md:rounded-tr-3xl md:rounded-tl-none">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-              <h2 className="text-lg font-bold text-purple-700">{he.avatar.name}</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                <h2 className="text-lg font-bold text-purple-700">{he.avatar.name}</h2>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-600 text-xs font-medium">
+                {topicEmojis[topic]} {topicLabel}
+              </span>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-600 text-xs font-medium">
-              {topicEmojis[topic]} {topicLabel}
-            </span>
+
+            {/* End lesson button */}
+            <button
+              onClick={() => setShowEndConfirm(true)}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+              title="סיים שיעור"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 

@@ -23,6 +23,7 @@ function createPrismaClient() {
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+export const db = prisma; // Alias for gamification service
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
