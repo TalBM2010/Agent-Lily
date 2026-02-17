@@ -37,18 +37,28 @@ model Parent {
 }
 
 model Child {
-  id             String          @id @default(cuid())
-  name           String
-  age            Int
-  nativeLanguage String          @default("he") @map("native_language")
-  currentLevel   DifficultyLevel @default(BEGINNER) @map("current_level")
-  parentId       String          @map("parent_id")
-  parent         Parent          @relation(fields: [parentId], references: [id])
-  lessons        Lesson[]
-  vocabulary     Vocabulary[]
-  achievements   Achievement[]
-  createdAt      DateTime        @default(now()) @map("created_at")
-  updatedAt      DateTime        @updatedAt @map("updated_at")
+  id               String           @id @default(cuid())
+  name             String
+  age              Int
+  nativeLanguage   String           @default("he") @map("native_language")
+  currentLevel     DifficultyLevel  @default(BEGINNER) @map("current_level")
+  parentId         String           @map("parent_id")
+  parent           Parent           @relation(fields: [parentId], references: [id])
+  lessons          Lesson[]
+  vocabulary       Vocabulary[]
+  achievements     Achievement[]
+  dailyActivities  DailyActivity[]
+  // Gamification fields
+  stars            Int              @default(0)
+  gamificationLevel Int             @default(1) @map("gamification_level")
+  currentStreak    Int              @default(0) @map("current_streak")
+  longestStreak    Int              @default(0) @map("longest_streak")
+  lastActivityDate DateTime?        @map("last_activity_date")
+  totalLessons     Int              @default(0) @map("total_lessons")
+  totalWordsLearned Int             @default(0) @map("total_words_learned")
+  accuracyStreak   Int              @default(0) @map("accuracy_streak")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
 
   @@index([parentId])
   @@map("children")
@@ -104,8 +114,28 @@ model Achievement {
   child    Child           @relation(fields: [childId], references: [id])
   type     AchievementType
   name     String
+  key      String          @default("")  // Unique achievement identifier
   earnedAt DateTime        @default(now()) @map("earned_at")
 
+  @@unique([childId, key])
   @@index([childId])
   @@map("achievements")
+}
+
+model DailyActivity {
+  id               String   @id @default(cuid())
+  childId          String   @map("child_id")
+  child            Child    @relation(fields: [childId], references: [id])
+  date             DateTime @db.Date
+  lessonsCompleted Int      @default(0) @map("lessons_completed")
+  starsEarned      Int      @default(0) @map("stars_earned")
+  wordsLearned     Int      @default(0) @map("words_learned")
+  minutesPracticed Int      @default(0) @map("minutes_practiced")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@unique([childId, date])
+  @@index([childId])
+  @@index([date])
+  @@map("daily_activities")
 }
