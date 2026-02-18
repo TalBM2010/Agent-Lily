@@ -3,6 +3,7 @@ import { PrismaClient } from "../src/generated/prisma/client.js";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
+import bcrypt from "bcryptjs";
 
 neonConfig.webSocketConstructor = ws;
 
@@ -10,16 +11,36 @@ const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const parent = await prisma.parent.upsert({
-    where: { email: "parent@test.com" },
+  // Create a test user (parent)
+  const passwordHash = await bcrypt.hash("test123", 12);
+  
+  const user = await prisma.user.upsert({
+    where: { email: "test@example.com" },
     update: {},
     create: {
-      id: "test-parent-1",
-      email: "parent@test.com",
-      name: "Test Parent",
+      id: "test-user-1",
+      email: "test@example.com",
+      name: "Test User",
+      passwordHash,
     },
   });
 
+  // Create admin user
+  const adminPasswordHash = await bcrypt.hash("admin123", 12);
+  
+  const admin = await prisma.user.upsert({
+    where: { email: "admin@lily.app" },
+    update: {},
+    create: {
+      id: "admin-user-1",
+      email: "admin@lily.app",
+      name: "Admin",
+      passwordHash: adminPasswordHash,
+      role: "ADMIN",
+    },
+  });
+
+  // Create a test child
   const child = await prisma.child.upsert({
     where: { id: "test-child-1" },
     update: {},
@@ -27,13 +48,14 @@ async function main() {
       id: "test-child-1",
       name: "Noa",
       age: 7,
+      avatar: "🦄",
       nativeLanguage: "he",
       currentLevel: "BEGINNER",
-      parentId: parent.id,
+      userId: user.id,
     },
   });
 
-  console.log("Seeded:", { parent: parent.id, child: child.id });
+  console.log("Seeded:", { user: user.id, admin: admin.id, child: child.id });
 }
 
 main()

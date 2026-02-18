@@ -7,6 +7,10 @@ datasource db {
   provider = "postgresql"
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ENUMS
+// ═══════════════════════════════════════════════════════════════════════════
+
 enum Speaker {
   AVATAR
   CHILD
@@ -25,29 +29,94 @@ enum AchievementType {
   VOCABULARY
 }
 
-model Parent {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  children  Child[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("parents")
+enum UserRole {
+  USER
+  ADMIN
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTH MODELS (NextAuth.js)
+// ═══════════════════════════════════════════════════════════════════════════
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  passwordHash  String?   @map("password_hash") // For credentials auth
+  role          UserRole  @default(USER)
+  
+  accounts      Account[]
+  sessions      Session[]
+  children      Child[]
+  
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// APP MODELS
+// ═══════════════════════════════════════════════════════════════════════════
 
 model Child {
   id               String           @id @default(cuid())
   name             String
-  age              Int
+  age              Int?
+  avatar           String           @default("⭐")
   nativeLanguage   String           @default("he") @map("native_language")
   currentLevel     DifficultyLevel  @default(BEGINNER) @map("current_level")
-  parentId         String           @map("parent_id")
-  parent           Parent           @relation(fields: [parentId], references: [id])
+  userId           String           @map("user_id")
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   lessons          Lesson[]
   vocabulary       Vocabulary[]
   achievements     Achievement[]
   dailyActivities  DailyActivity[]
+  analyticsEvents  AnalyticsEvent[]
+  
   // Gamification fields
   stars            Int              @default(0)
   gamificationLevel Int             @default(1) @map("gamification_level")
@@ -57,17 +126,18 @@ model Child {
   totalLessons     Int              @default(0) @map("total_lessons")
   totalWordsLearned Int             @default(0) @map("total_words_learned")
   accuracyStreak   Int              @default(0) @map("accuracy_streak")
+  
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
 
-  @@index([parentId])
+  @@index([userId])
   @@map("children")
 }
 
 model Lesson {
   id          String          @id @default(cuid())
   childId     String          @map("child_id")
-  child       Child           @relation(fields: [childId], references: [id])
+  child       Child           @relation(fields: [childId], references: [id], onDelete: Cascade)
   topic       String
   difficulty  DifficultyLevel @default(BEGINNER)
   turns       Turn[]
@@ -83,7 +153,7 @@ model Lesson {
 model Turn {
   id        String   @id @default(cuid())
   lessonId  String   @map("lesson_id")
-  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   speaker   Speaker
   text      String
   audioUrl  String?  @map("audio_url")
@@ -96,7 +166,7 @@ model Turn {
 model Vocabulary {
   id           String   @id @default(cuid())
   childId      String   @map("child_id")
-  child        Child    @relation(fields: [childId], references: [id])
+  child        Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
   word         String
   timesSeen    Int      @default(1) @map("times_seen")
   timesCorrect Int      @default(0) @map("times_correct")
@@ -111,10 +181,10 @@ model Vocabulary {
 model Achievement {
   id       String          @id @default(cuid())
   childId  String          @map("child_id")
-  child    Child           @relation(fields: [childId], references: [id])
+  child    Child           @relation(fields: [childId], references: [id], onDelete: Cascade)
   type     AchievementType
   name     String
-  key      String          @default("")  // Unique achievement identifier
+  key      String          @default("")
   earnedAt DateTime        @default(now()) @map("earned_at")
 
   @@unique([childId, key])
@@ -125,7 +195,7 @@ model Achievement {
 model DailyActivity {
   id               String   @id @default(cuid())
   childId          String   @map("child_id")
-  child            Child    @relation(fields: [childId], references: [id])
+  child            Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
   date             DateTime @db.Date
   lessonsCompleted Int      @default(0) @map("lessons_completed")
   starsEarned      Int      @default(0) @map("stars_earned")
@@ -138,4 +208,24 @@ model DailyActivity {
   @@index([childId])
   @@index([date])
   @@map("daily_activities")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════════════════════════════════════════════
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  childId   String?  @map("child_id")
+  child     Child?   @relation(fields: [childId], references: [id], onDelete: SetNull)
+  eventType String   @map("event_type") // login, lesson_start, lesson_complete, etc.
+  metadata  Json?    // Additional event data
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([childId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("analytics_events")
 }
