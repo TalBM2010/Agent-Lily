@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { getChildProgress } from "@/services/gamification";
 import { ACHIEVEMENTS } from "@/lib/gamification/constants";

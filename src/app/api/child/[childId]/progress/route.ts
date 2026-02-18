@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
 import { getChildProgress } from "@/services/progress";
 import { toApiError } from "@/lib/errors";

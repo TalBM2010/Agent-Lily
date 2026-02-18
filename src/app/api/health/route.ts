@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
 import { runHealthCheck } from "@/services/health-check";
 import { logger } from "@/lib/logger";

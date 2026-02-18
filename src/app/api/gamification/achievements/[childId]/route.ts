@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { ACHIEVEMENTS, ALL_ACHIEVEMENT_KEYS } from "@/lib/gamification/constants";
