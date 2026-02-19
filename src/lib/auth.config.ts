@@ -32,7 +32,7 @@ export const authConfig: NextAuthConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       
-      const protectedRoutes = ["/children", "/topics", "/lesson", "/admin"];
+      const protectedRoutes = ["/children", "/topics", "/lesson", "/admin", "/dashboard", "/games", "/profile"];
       const authRoutes = ["/login", "/signup"];
       
       const isProtectedRoute = protectedRoutes.some(route => 
