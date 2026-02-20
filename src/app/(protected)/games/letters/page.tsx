@@ -318,7 +318,7 @@ export default function LettersGamePage() {
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                {currentLetter.upper}{currentLetter.lower}
+                {currentLetter.upper}
               </motion.div>
               
               {learnedLetters.has(currentLetter.upper) && (
@@ -544,11 +544,7 @@ export default function LettersGamePage() {
                     transition={{ delay: i * 0.1 }}
                   >
                     <span className="text-gray-700">
-                      {isListenQuiz ? (
-                        `${option.upper}${option.lower}`
-                      ) : (
-                        option.lower
-                      )}
+                      {isListenQuiz ? option.upper : option.lower}
                     </span>
                     {showResult && isCorrectAnswer && (
                       <Check className="w-6 h-6 mx-auto mt-2 text-green" />
