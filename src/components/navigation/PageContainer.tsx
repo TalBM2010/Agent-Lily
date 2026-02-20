@@ -31,7 +31,7 @@ export function PageContainer({
   className = "",
 }: PageContainerProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream-50 via-cream to-cream-200">
+    <div className="min-h-screen bg-gray-50">
       {/* Top navigation */}
       {showTopNav && (
         <TopNav
@@ -46,7 +46,7 @@ export function PageContainer({
       {/* Main content */}
       <motion.main
         className={`
-          ${showBottomNav ? "pb-28" : "pb-6"}
+          ${showBottomNav ? "pb-24" : "pb-6"}
           ${noPadding ? "" : ""}
           ${className}
         `}

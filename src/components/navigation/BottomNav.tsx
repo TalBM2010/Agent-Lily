@@ -17,8 +17,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50">
-      {/* Safe area background */}
-      <div className="bg-white/95 backdrop-blur-xl border-t border-cream-200 shadow-lg safe-area-bottom">
+      <div className="bg-white border-t border-gray-200 shadow-lg safe-area-bottom">
         <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -28,40 +27,30 @@ export function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="relative flex flex-col items-center justify-center w-full py-2"
+                className="flex flex-col items-center justify-center w-full py-1"
               >
                 <motion.div
                   className={`
-                    relative flex flex-col items-center justify-center
-                    w-16 h-14 rounded-2xl transition-all duration-200
+                    flex flex-col items-center justify-center
+                    w-14 h-12 rounded-xl transition-all duration-200
                     ${isActive 
-                      ? "bg-gradient-to-br from-garden-green to-garden-green-dark shadow-lg" 
-                      : "hover:bg-cream-100"
+                      ? "bg-lily" 
+                      : "hover:bg-gray-100"
                     }
                   `}
                   whileTap={{ scale: 0.9 }}
                 >
                   <Icon 
-                    className={`w-6 h-6 ${isActive ? "text-white" : "text-text-light"}`} 
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-gray-400"}`} 
                   />
                   <span
                     className={`
-                      text-xs mt-1 font-bold transition-colors duration-200
-                      ${isActive ? "text-white" : "text-text-light"}
+                      text-xs mt-0.5 font-bold
+                      ${isActive ? "text-white" : "text-gray-400"}
                     `}
                   >
                     {item.label}
                   </span>
-                  
-                  {/* Active indicator dot */}
-                  {isActive && (
-                    <motion.div
-                      className="absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      layoutId="navDot"
-                    />
-                  )}
                 </motion.div>
               </Link>
             );
