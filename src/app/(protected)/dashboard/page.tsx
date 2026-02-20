@@ -127,7 +127,26 @@ export default function DashboardPage() {
   }
 
   if (!child) {
-    return null;
+    // If child data failed to load, redirect back to children selection
+    router.push("/children");
+    return (
+      <div className="min-h-screen bg-storybook flex items-center justify-center">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.span
+            className="text-4xl block mb-2"
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          >
+            🔄
+          </motion.span>
+          <p className="text-text-light">חוזרים לבחירת ילד...</p>
+        </motion.div>
+      </div>
+    );
   }
 
   return (
