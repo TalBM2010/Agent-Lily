@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, LogOut, Clock } from "lucide-react";
+import { Plus, LogOut, Clock, Star, Flame, X } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { CHILD_AVATARS } from "@/lib/constants";
 
@@ -17,20 +17,20 @@ type Child = {
   totalLessons: number;
 };
 
-// Storybook-themed avatar backgrounds
-const avatarColors: Record<string, { bg: string; border: string }> = {
-  "🦄": { bg: "bg-lily-pink-light", border: "border-lily-pink" },
-  "🐱": { bg: "bg-sunshine-light", border: "border-sunshine" },
-  "🐼": { bg: "bg-cream-200", border: "border-wood-light" },
-  "⭐": { bg: "bg-sunshine-light", border: "border-sunshine" },
-  "🦋": { bg: "bg-story-blue-light", border: "border-story-blue" },
-  "🐰": { bg: "bg-lily-pink-light", border: "border-lily-pink" },
-  "🌈": { bg: "bg-garden-green-light", border: "border-garden-green" },
-  "🐶": { bg: "bg-sunshine-light", border: "border-sunshine-dark" },
+// Avatar colors - vibrant but harmonious
+const avatarThemes: Record<string, { gradient: string; bg: string }> = {
+  "🦄": { gradient: "from-fuchsia-400 to-purple-500", bg: "bg-fuchsia-100" },
+  "🐱": { gradient: "from-amber-400 to-orange-500", bg: "bg-amber-100" },
+  "🐼": { gradient: "from-slate-400 to-slate-600", bg: "bg-slate-100" },
+  "⭐": { gradient: "from-yellow-400 to-amber-500", bg: "bg-yellow-100" },
+  "🦋": { gradient: "from-cyan-400 to-blue-500", bg: "bg-cyan-100" },
+  "🐰": { gradient: "from-pink-400 to-rose-500", bg: "bg-pink-100" },
+  "🌈": { gradient: "from-green-400 to-emerald-500", bg: "bg-green-100" },
+  "🐶": { gradient: "from-orange-400 to-amber-500", bg: "bg-orange-100" },
 };
 
 function formatLastActivity(dateStr: string | null): string {
-  if (!dateStr) return "חדש!";
+  if (!dateStr) return "מוכן להתחיל!";
   
   const date = new Date(dateStr);
   const now = new Date();
@@ -102,7 +102,6 @@ export default function ChildrenPage() {
   }
 
   function handleSelectChild(childId: string) {
-    // Save selected child to localStorage and go to dashboard (main hub)
     localStorage.setItem("selectedChildId", childId);
     const child = children.find(c => c.id === childId);
     if (child) {
@@ -116,129 +115,98 @@ export default function ChildrenPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-storybook flex items-center justify-center">
+      <main className="min-h-screen bg-gradient-to-b from-cream-50 via-cream to-cream-200 flex items-center justify-center">
         <motion.div
           className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
         >
-          <motion.span
-            className="text-6xl block"
-            animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+          <motion.div
+            className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-garden-green to-garden-green-dark flex items-center justify-center shadow-xl"
+            animate={{ 
+              y: [0, -8, 0],
+              rotate: [0, 3, -3, 0]
+            }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            🌸
-          </motion.span>
-          <p className="text-text-light mt-3 font-medium">טוען...</p>
+            <span className="text-5xl">🌸</span>
+          </motion.div>
+          <p className="text-xl font-bold text-text-dark">טוען...</p>
         </motion.div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-storybook px-4 py-8 relative overflow-hidden">
-      {/* Storybook decorations */}
-      <div className="storybook-decorations">
-        <motion.span
-          className="absolute text-3xl opacity-25"
-          style={{ top: "10%", left: "5%" }}
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        >
-          🌿
-        </motion.span>
-        <motion.span
-          className="absolute text-2xl opacity-30"
-          style={{ top: "15%", right: "8%" }}
-          animate={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
-          transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
-        >
-          🍃
-        </motion.span>
-        <motion.span
-          className="absolute text-3xl opacity-35"
-          style={{ bottom: "20%", right: "5%" }}
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, delay: 1 }}
-        >
-          🌸
-        </motion.span>
-        <motion.span
-          className="absolute text-2xl opacity-40"
-          style={{ bottom: "30%", left: "10%" }}
-          animate={{ 
-            x: [0, 15, 0], 
-            y: [0, -10, 0]
-          }}
-          transition={{ duration: 6, repeat: Infinity }}
-        >
-          🦋
-        </motion.span>
-      </div>
-
-      <div className="vignette" />
-
-      <div className="relative z-10 max-w-md mx-auto">
+    <main className="min-h-screen bg-gradient-to-b from-cream-50 via-cream to-cream-200 px-4 py-8">
+      <div className="max-w-lg mx-auto">
+        
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <motion.div 
+          className="flex items-center justify-between mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           <div>
-            <h1 className="text-2xl font-bold font-heading text-text-dark">מי לומד היום?</h1>
-            <p className="text-garden-green-dark font-medium">בחרו פרופיל להמשיך</p>
+            <h1 className="text-3xl font-bold text-text-dark mb-1">מי לומד היום?</h1>
+            <p className="text-lg text-garden-green-dark font-medium">בחרו פרופיל להמשיך 🌟</p>
           </div>
-          <button
+          <motion.button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="p-2.5 text-text-light hover:text-text-dark hover:bg-cream-200 rounded-full transition-all"
+            className="w-12 h-12 flex items-center justify-center rounded-xl bg-white shadow-md border border-cream-200 text-text-light hover:text-text-dark hover:bg-cream-100 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             title="התנתקות"
           >
             <LogOut className="w-5 h-5" />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
-        {/* Children Grid - Storybook character cards */}
+        {/* Children Grid */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           {children.map((child, index) => {
-            const colors = avatarColors[child.avatar] || { bg: "bg-cream-100", border: "border-wood-light" };
+            const theme = avatarThemes[child.avatar] || { gradient: "from-gray-400 to-gray-500", bg: "bg-gray-100" };
             
             return (
               <motion.button
                 key={child.id}
                 onClick={() => handleSelectChild(child.id)}
-                className="card-character p-5 text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                className="relative bg-white rounded-2xl p-5 shadow-lg border border-cream-200 overflow-hidden text-center"
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ scale: 1.03, y: -4 }}
                 whileTap={{ scale: 0.97 }}
               >
-                {/* Avatar in illustrated frame */}
-                <div className={`
-                  w-16 h-16 mx-auto mb-3 rounded-2xl 
-                  ${colors.bg} ${colors.border} border-3
-                  flex items-center justify-center 
-                  shadow-warm
-                `}>
-                  <motion.span 
-                    className="text-3xl"
-                    animate={{ scale: [1, 1.08, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
-                  >
-                    {child.avatar}
-                  </motion.span>
-                </div>
-                <h3 className="font-bold font-heading text-text-dark mb-1">{child.name}</h3>
+                {/* Gradient top decoration */}
+                <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${theme.gradient}`} />
                 
-                {/* Stats row */}
-                <div className="flex items-center justify-center gap-3 text-sm text-text-light mb-2">
-                  <span className="flex items-center gap-1">
-                    <span>⭐</span> {child.stars}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span>🔥</span> {child.currentStreak}
-                  </span>
+                {/* Avatar */}
+                <motion.div 
+                  className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${theme.gradient} flex items-center justify-center shadow-lg`}
+                  whileHover={{ rotate: [0, -5, 5, 0] }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <span className="text-4xl">{child.avatar}</span>
+                </motion.div>
+                
+                {/* Name */}
+                <h3 className="text-xl font-bold text-text-dark mb-2">{child.name}</h3>
+                
+                {/* Stats */}
+                <div className="flex items-center justify-center gap-4 mb-3">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-sunshine" fill="currentColor" />
+                    <span className="text-sm font-bold text-text-dark">{child.stars}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Flame className="w-4 h-4 text-orange-400" />
+                    <span className="text-sm font-bold text-text-dark">{child.currentStreak}</span>
+                  </div>
                 </div>
                 
                 {/* Last activity */}
-                <div className="flex items-center justify-center gap-1 text-xs text-text-light">
+                <div className="flex items-center justify-center gap-1 text-xs text-text-light bg-cream-100 rounded-full py-1 px-3">
                   <Clock className="w-3 h-3" />
                   <span>{formatLastActivity(child.lastActivityDate)}</span>
                 </div>
@@ -249,19 +217,29 @@ export default function ChildrenPage() {
           {/* Add Child Button */}
           <motion.button
             onClick={() => setShowAddModal(true)}
-            className="rounded-xl p-5 border-3 border-dashed border-wood-light text-center hover:bg-cream-100 transition-all flex flex-col items-center justify-center"
+            className="flex flex-col items-center justify-center p-5 rounded-2xl border-3 border-dashed border-garden-green-light bg-garden-green-50/50 hover:bg-garden-green-light/30 transition-colors min-h-[200px]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: children.length * 0.1 }}
-            whileHover={{ scale: 1.03, borderColor: "var(--wood-brown)" }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <div className="w-16 h-16 mb-3 rounded-2xl bg-cream-200 flex items-center justify-center">
-              <Plus className="w-8 h-8 text-garden-green" />
+            <div className="w-16 h-16 mb-4 rounded-2xl bg-garden-green-light flex items-center justify-center">
+              <Plus className="w-8 h-8 text-garden-green-dark" />
             </div>
-            <h3 className="font-medium text-garden-green-dark">הוספת ילד/ה</h3>
+            <h3 className="text-lg font-bold text-garden-green-dark">הוספת ילד/ה</h3>
+            <p className="text-sm text-garden-green mt-1">ליצור פרופיל חדש</p>
           </motion.button>
         </div>
+
+        {/* Bottom decoration */}
+        <motion.div 
+          className="text-center text-4xl opacity-30 mt-8"
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        >
+          🌸 🌿 🦋
+        </motion.div>
       </div>
 
       {/* Add Child Modal */}
@@ -273,60 +251,85 @@ export default function ChildrenPage() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
+            {/* Backdrop */}
             <motion.div 
-              className="absolute inset-0 bg-wood-dark/30 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => setShowAddModal(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
+            
+            {/* Modal */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative card-storybook p-6 w-full max-w-sm shadow-warm-xl"
+              className="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl"
             >
-              <h2 className="text-xl font-bold font-heading text-text-dark mb-4 text-center">
-                הוספת ילד/ה חדש/ה 🌟
-              </h2>
+              {/* Close button */}
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="absolute top-4 left-4 w-10 h-10 flex items-center justify-center rounded-full bg-cream-100 hover:bg-cream-200 transition-colors"
+              >
+                <X className="w-5 h-5 text-text-light" />
+              </button>
               
-              <form onSubmit={handleCreateChild} className="space-y-4">
+              <div className="text-center mb-6">
+                <span className="text-5xl block mb-3">🌟</span>
+                <h2 className="text-2xl font-bold text-text-dark">הוספת ילד/ה</h2>
+                <p className="text-text-light">יוצרים פרופיל חדש</p>
+              </div>
+              
+              <form onSubmit={handleCreateChild} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
-                    שם
+                  <label className="block text-sm font-bold text-text-dark mb-2 text-right">
+                    שם הילד/ה
                   </label>
                   <input
                     type="text"
                     value={newChildName}
                     onChange={(e) => setNewChildName(e.target.value)}
-                    className="input-storybook text-right"
-                    placeholder="שם הילד/ה"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-cream-300 bg-cream-50 text-lg text-right focus:outline-none focus:border-garden-green focus:ring-2 focus:ring-garden-green/20 transition-all"
+                    placeholder="הכניסו שם..."
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-text-dark mb-2 text-right">
+                  <label className="block text-sm font-bold text-text-dark mb-3 text-right">
                     בחירת דמות
                   </label>
                   <div className="grid grid-cols-4 gap-2">
                     {CHILD_AVATARS.map((avatar) => {
-                      const colors = avatarColors[avatar.emoji] || { bg: "bg-cream-100", border: "border-wood-light" };
+                      const theme = avatarThemes[avatar.emoji] || { gradient: "from-gray-400 to-gray-500", bg: "bg-gray-100" };
+                      const isSelected = newChildAvatar === avatar.emoji;
                       return (
-                        <button
+                        <motion.button
                           key={avatar.emoji}
                           type="button"
                           onClick={() => setNewChildAvatar(avatar.emoji)}
                           className={`
-                            p-2.5 rounded-xl transition-all border-2
-                            ${newChildAvatar === avatar.emoji
-                              ? `${colors.bg} ${colors.border} shadow-warm`
-                              : "bg-cream-50 border-transparent hover:bg-cream-100"
+                            relative p-3 rounded-xl transition-all border-3
+                            ${isSelected
+                              ? `bg-gradient-to-br ${theme.gradient} border-transparent shadow-lg`
+                              : `${theme.bg} border-transparent hover:border-cream-300`
                             }
                           `}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                         >
-                          <span className="text-2xl block">{avatar.emoji}</span>
-                        </button>
+                          <span className="text-3xl block">{avatar.emoji}</span>
+                          {isSelected && (
+                            <motion.div
+                              className="absolute -top-1 -right-1 w-6 h-6 bg-garden-green rounded-full flex items-center justify-center shadow-md"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                            >
+                              <span className="text-white text-xs">✓</span>
+                            </motion.div>
+                          )}
+                        </motion.button>
                       );
                     })}
                   </div>
@@ -336,14 +339,14 @@ export default function ChildrenPage() {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="flex-1 btn-outline"
+                    className="flex-1 py-4 px-6 rounded-xl font-bold text-text-medium bg-cream-100 hover:bg-cream-200 transition-colors"
                   >
                     ביטול
                   </button>
                   <button
                     type="submit"
                     disabled={isCreating || !newChildName.trim()}
-                    className="flex-1 btn-primary"
+                    className="flex-1 py-4 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-garden-green to-garden-green-dark shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     {isCreating ? "יוצר..." : "הוספה 🌸"}
                   </button>

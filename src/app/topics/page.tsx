@@ -1,37 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { ChevronRight, Sparkles } from "lucide-react";
 import { LESSON_TOPICS } from "@/lib/constants";
 import { getOnboardingData } from "@/lib/onboarding";
 import { PageContainer } from "@/components/navigation";
 import type { LessonTopic } from "@/lib/types";
 
-// Storybook-themed topic colors
-const topicColors: Record<LessonTopic, { bg: string; border: string; selected: string }> = {
-  animals: { bg: "bg-sunshine-light", border: "border-sunshine", selected: "bg-sunshine" },
-  colors: { bg: "bg-lily-pink-light", border: "border-lily-pink", selected: "bg-lily-pink" },
-  family: { bg: "bg-lily-pink-50", border: "border-lily-pink-light", selected: "bg-lily-pink-light" },
-  food: { bg: "bg-sunshine-50", border: "border-sunshine-light", selected: "bg-sunshine-light" },
-  numbers: { bg: "bg-story-blue-light", border: "border-story-blue", selected: "bg-story-blue" },
-  body: { bg: "bg-garden-green-light", border: "border-garden-green", selected: "bg-garden-green" },
-  clothes: { bg: "bg-lily-pink-light", border: "border-lily-pink", selected: "bg-lily-pink" },
-  weather: { bg: "bg-story-blue-50", border: "border-story-blue-light", selected: "bg-story-blue-light" },
-  school: { bg: "bg-garden-green-50", border: "border-garden-green-light", selected: "bg-garden-green-light" },
-  toys: { bg: "bg-sunshine-light", border: "border-sunshine", selected: "bg-sunshine" },
+// Vibrant topic themes
+const topicThemes: Record<LessonTopic, { 
+  gradient: string; 
+  bg: string; 
+  shadow: string;
+  emoji: string;
+}> = {
+  animals: { 
+    gradient: "from-amber-400 to-orange-500", 
+    bg: "bg-amber-100", 
+    shadow: "shadow-amber-200",
+    emoji: "🦁"
+  },
+  colors: { 
+    gradient: "from-fuchsia-400 to-pink-500", 
+    bg: "bg-fuchsia-100", 
+    shadow: "shadow-fuchsia-200",
+    emoji: "🎨"
+  },
+  family: { 
+    gradient: "from-rose-400 to-pink-500", 
+    bg: "bg-rose-100", 
+    shadow: "shadow-rose-200",
+    emoji: "👨‍👩‍👧"
+  },
+  food: { 
+    gradient: "from-yellow-400 to-orange-400", 
+    bg: "bg-yellow-100", 
+    shadow: "shadow-yellow-200",
+    emoji: "🍕"
+  },
+  numbers: { 
+    gradient: "from-blue-400 to-indigo-500", 
+    bg: "bg-blue-100", 
+    shadow: "shadow-blue-200",
+    emoji: "🔢"
+  },
+  body: { 
+    gradient: "from-emerald-400 to-green-500", 
+    bg: "bg-emerald-100", 
+    shadow: "shadow-emerald-200",
+    emoji: "🖐️"
+  },
+  clothes: { 
+    gradient: "from-purple-400 to-violet-500", 
+    bg: "bg-purple-100", 
+    shadow: "shadow-purple-200",
+    emoji: "👕"
+  },
+  weather: { 
+    gradient: "from-cyan-400 to-blue-500", 
+    bg: "bg-cyan-100", 
+    shadow: "shadow-cyan-200",
+    emoji: "🌤️"
+  },
+  school: { 
+    gradient: "from-teal-400 to-emerald-500", 
+    bg: "bg-teal-100", 
+    shadow: "shadow-teal-200",
+    emoji: "📚"
+  },
+  toys: { 
+    gradient: "from-violet-400 to-purple-500", 
+    bg: "bg-violet-100", 
+    shadow: "shadow-violet-200",
+    emoji: "🎮"
+  },
 };
 
 export default function TopicsPage() {
   const router = useRouter();
   const [selectedTopic, setSelectedTopic] = useState<LessonTopic | null>(null);
+  const [childData, setChildData] = useState<{ childName: string; avatar: string } | null>(null);
 
-  const [onboardingData] = useState(() => {
-    if (typeof window === "undefined") return null;
-    return getOnboardingData();
-  });
-  const childName = onboardingData?.childName ?? "";
-  const childAvatar = onboardingData?.avatar ?? "⭐";
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setChildData(getOnboardingData());
+    }
+  }, []);
+
+  const childName = childData?.childName ?? "";
+  const childAvatar = childData?.avatar ?? "⭐";
 
   function handleStart() {
     if (!selectedTopic) return;
@@ -40,50 +99,52 @@ export default function TopicsPage() {
 
   return (
     <PageContainer
-      title="בחירת נושא"
       showBottomNav={true}
+      showTopNav={true}
       showBack={true}
+      title="בחירת נושא"
     >
-      <div className="max-w-lg mx-auto flex flex-col items-center py-4">
-        {/* Header */}
+      <div className="max-w-lg mx-auto py-6 px-4">
+        
+        {/* Header with Avatar */}
         <motion.div
-          className="text-center mb-6"
-          initial={{ opacity: 0, y: -10 }}
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="relative inline-block mb-2">
+          <motion.div
+            className="inline-block relative mb-4"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-lily-pink to-lily-pink-dark flex items-center justify-center shadow-xl">
+              <span className="text-5xl">{childAvatar}</span>
+            </div>
             <motion.span
-              className="text-5xl"
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-            >
-              {childAvatar}
-            </motion.span>
-            <motion.span
-              className="absolute -right-4 -bottom-1 text-2xl"
-              animate={{ rotate: [0, 8, -5, 0], scale: [1, 1.1, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              className="absolute -bottom-1 -right-2 text-3xl"
+              animate={{ rotate: [0, 10, -5, 0], scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
               🌸
             </motion.span>
-          </div>
+          </motion.div>
           
-          <h1 className="text-2xl font-bold font-heading text-text-dark mb-0.5">
+          <h1 className="text-3xl font-bold text-text-dark mb-1">
             {childName ? `מה נלמד, ${childName}?` : "מה נלמד היום?"}
           </h1>
-          <p className="text-sm text-garden-green-dark font-medium">בחרי נושא!</p>
+          <p className="text-lg text-garden-green-dark font-medium">בחרי נושא!</p>
         </motion.div>
 
-        {/* Topic grid - Book covers style */}
+        {/* Topics Grid */}
         <motion.div
-          className="card-storybook p-4 w-full max-w-sm mb-6 border-3 border-wood-light"
-          initial={{ opacity: 0, y: 10 }}
+          className="bg-white rounded-3xl p-5 shadow-xl border border-cream-200 mb-6"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-3">
             {LESSON_TOPICS.map((topic, index) => {
-              const colors = topicColors[topic.id];
+              const theme = topicThemes[topic.id];
               const isSelected = selectedTopic === topic.id;
               
               return (
@@ -92,29 +153,43 @@ export default function TopicsPage() {
                   onClick={() => setSelectedTopic(topic.id)}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.15 + index * 0.03 }}
+                  transition={{ delay: 0.1 + index * 0.03 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   className={`
-                    relative flex flex-col items-center gap-1 p-3
-                    rounded-xl transition-all duration-200 border-2
+                    relative p-4 rounded-2xl transition-all duration-200
                     ${isSelected
-                      ? `${colors.selected} ${colors.border} shadow-warm`
-                      : `${colors.bg} border-transparent hover:border-cream-300`
+                      ? `bg-gradient-to-br ${theme.gradient} shadow-lg ${theme.shadow}`
+                      : `${theme.bg} hover:shadow-md`
                     }
                   `}
                 >
+                  {/* Selection indicator */}
                   {isSelected && (
                     <motion.div
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-garden-green rounded-full flex items-center justify-center shadow-sm"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2 w-7 h-7 bg-garden-green rounded-full flex items-center justify-center shadow-lg z-10"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 25 }}
                     >
-                      <span className="text-white text-xs">✓</span>
+                      <span className="text-white text-sm font-bold">✓</span>
                     </motion.div>
                   )}
                   
-                  <span className="text-2xl">{topic.emoji}</span>
-                  <span className={`text-xs font-bold ${isSelected ? "text-text-dark" : "text-text-medium"}`}>
+                  {/* Icon */}
+                  <motion.span 
+                    className="text-4xl block mb-2"
+                    animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {theme.emoji}
+                  </motion.span>
+                  
+                  {/* Label */}
+                  <span className={`
+                    text-sm font-bold block
+                    ${isSelected ? "text-white" : "text-text-dark"}
+                  `}>
                     {topic.hebrewLabel}
                   </span>
                 </motion.button>
@@ -123,28 +198,55 @@ export default function TopicsPage() {
           </div>
         </motion.div>
 
-        {/* Start button */}
+        {/* Start Button */}
         <motion.button
           onClick={handleStart}
           disabled={!selectedTopic}
           className={`
-            relative px-10 py-4 rounded-full text-lg font-bold font-heading
+            w-full py-5 rounded-2xl text-xl font-bold
+            flex items-center justify-center gap-3
             transition-all duration-300
             ${selectedTopic
-              ? "btn-primary"
+              ? "bg-gradient-to-r from-garden-green to-garden-green-dark text-white shadow-xl hover:shadow-2xl"
               : "bg-cream-200 text-text-light cursor-not-allowed"
             }
           `}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          whileTap={selectedTopic ? { scale: 0.95 } : {}}
+          whileHover={selectedTopic ? { scale: 1.02, y: -2 } : {}}
+          whileTap={selectedTopic ? { scale: 0.98 } : {}}
         >
-          <span className="flex items-center gap-2">
-            {selectedTopic ? "בואו נלמד!" : "בחרי נושא"}
-            {selectedTopic && <span className="text-xl">🚀</span>}
-          </span>
+          {selectedTopic ? (
+            <>
+              <span>בואו נלמד!</span>
+              <motion.span 
+                className="text-2xl"
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                🚀
+              </motion.span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5" />
+              <span>בחרי נושא</span>
+            </>
+          )}
         </motion.button>
+
+        {/* Hint text */}
+        {!selectedTopic && (
+          <motion.p
+            className="text-center text-text-light text-sm mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            לחצי על נושא כדי לבחור 👆
+          </motion.p>
+        )}
       </div>
     </PageContainer>
   );
