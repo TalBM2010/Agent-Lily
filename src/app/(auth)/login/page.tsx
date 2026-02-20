@@ -44,107 +44,45 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen min-h-dvh bg-storybook flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Storybook decorations */}
-      <div className="storybook-decorations">
-        {/* Floating leaves */}
-        <motion.span
-          className="absolute text-3xl opacity-30"
-          style={{ top: "15%", left: "8%" }}
-          animate={{ y: [0, -12, 0], rotate: [0, 5, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🍃
-        </motion.span>
-        <motion.span
-          className="absolute text-2xl opacity-25"
-          style={{ bottom: "25%", right: "10%" }}
-          animate={{ y: [0, -8, 0], rotate: [0, -5, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        >
-          🌿
-        </motion.span>
-        
-        {/* Floating flowers */}
-        <motion.span
-          className="absolute text-3xl opacity-40"
-          style={{ top: "20%", right: "12%" }}
-          animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🌸
-        </motion.span>
-        <motion.span
-          className="absolute text-2xl opacity-35"
-          style={{ bottom: "18%", left: "15%" }}
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        >
-          🌷
-        </motion.span>
-        
-        {/* Butterfly */}
-        <motion.span
-          className="absolute text-2xl opacity-50"
-          style={{ top: "35%", left: "5%" }}
-          animate={{ 
-            x: [0, 30, 0], 
-            y: [0, -20, 0],
-            rotate: [0, 10, -5, 0]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🦋
-        </motion.span>
-      </div>
-      
-      {/* Soft vignette */}
-      <div className="vignette" />
-
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <motion.div
-        className="relative z-10 w-full max-w-sm"
+        className="w-full max-w-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        {/* Logo - Lily flower instead of fairy */}
-        <div className="text-center mb-6">
+        {/* Logo */}
+        <div className="text-center mb-8">
           <motion.div 
-            className="relative inline-block"
+            className="inline-block"
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <span className="text-6xl">🌸</span>
-            {/* Small sparkles around the flower */}
-            <motion.span
-              className="absolute -top-1 -right-1 text-xl"
-              animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.1, 0.8] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              ✨
-            </motion.span>
+            <div className="w-20 h-20 mx-auto rounded-2xl bg-lily flex items-center justify-center shadow-lg mb-4">
+              <span className="text-4xl">🌸</span>
+            </div>
           </motion.div>
-          <h1 className="text-2xl font-bold font-heading text-text-dark mt-2">ברוכים הבאים ללילי!</h1>
-          <p className="text-garden-green-dark font-medium">התחברו כדי להמשיך ללמוד</p>
+          <h1 className="text-2xl font-bold text-gray-800">ברוכים הבאים ללילי!</h1>
+          <p className="text-lily font-medium">התחברו כדי להמשיך ללמוד</p>
         </div>
 
-        {/* Form Card - Storybook style */}
-        <div className="card-storybook p-6">
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-lily-pink-light text-lily-pink-dark text-sm p-3 rounded-xl text-center border border-lily-pink">
+              <div className="bg-red-light text-red text-sm p-3 rounded-xl text-center">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
+              <label className="block text-sm font-bold text-gray-700 mb-1.5 text-right">
                 אימייל
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input-storybook"
+                className="input"
                 placeholder="your@email.com"
                 dir="ltr"
                 required
@@ -152,14 +90,14 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
+              <label className="block text-sm font-bold text-gray-700 mb-1.5 text-right">
                 סיסמה
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input-storybook"
+                className="input"
                 placeholder="••••••"
                 dir="ltr"
                 required
@@ -169,22 +107,22 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-primary"
+              className="w-full py-4 bg-lily text-white rounded-xl font-bold shadow-md hover:bg-lily-dark disabled:opacity-50 transition-colors"
             >
               {isLoading ? "מתחבר..." : "התחברות 🌟"}
             </button>
           </form>
 
           <div className="my-4 flex items-center gap-3">
-            <div className="flex-1 h-px bg-cream-300" />
-            <span className="text-sm text-text-light">או</span>
-            <div className="flex-1 h-px bg-cream-300" />
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-sm text-gray-400">או</span>
+            <div className="flex-1 h-px bg-gray-200" />
           </div>
 
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full btn-outline flex items-center justify-center gap-2"
+            className="w-full py-4 bg-white border-2 border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -197,9 +135,9 @@ export default function LoginPage() {
         </div>
 
         {/* Sign up link */}
-        <p className="text-center mt-4 text-text-medium">
+        <p className="text-center mt-6 text-gray-500">
           אין לך חשבון?{" "}
-          <Link href="/signup" className="text-garden-green-dark font-semibold hover:underline">
+          <Link href="/signup" className="text-lily font-bold hover:underline">
             הרשמה
           </Link>
         </p>
