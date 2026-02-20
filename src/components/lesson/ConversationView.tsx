@@ -454,16 +454,39 @@ export function ConversationView({ childId, topic }: ConversationViewProps) {
             )}
           </div>
 
-          {/* Next lesson button */}
-          <motion.a
-            href="/topics"
-            className="block w-full py-4 text-center text-xl font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg hover:shadow-xl transition-all"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            לשיעור הבא! 🚀
-          </motion.a>
+          {/* Action buttons */}
+          <div className="space-y-3">
+            <motion.a
+              href="/topics"
+              className="block w-full py-4 text-center text-xl font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              לשיעור הבא! 🚀
+            </motion.a>
+            
+            <div className="flex gap-3">
+              <motion.a
+                href="/games"
+                className="flex-1 py-3 text-center font-bold text-purple-600 bg-purple-100 rounded-xl hover:bg-purple-200 transition-all"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+              >
+                משחקים 🎮
+              </motion.a>
+              <motion.a
+                href="/dashboard"
+                className="flex-1 py-3 text-center font-bold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9 }}
+              >
+                הבית 🏠
+              </motion.a>
+            </div>
+          </div>
         </motion.div>
 
         {/* Modals */}

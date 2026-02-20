@@ -22,6 +22,8 @@ export async function GET() {
         stars: true,
         currentStreak: true,
         gamificationLevel: true,
+        lastActivityDate: true,
+        totalLessons: true,
       },
       orderBy: { createdAt: "asc" },
     });

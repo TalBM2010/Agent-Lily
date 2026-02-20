@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, LogOut } from "lucide-react";
+import { Plus, LogOut, Clock } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { CHILD_AVATARS } from "@/lib/constants";
 
@@ -13,6 +13,8 @@ type Child = {
   avatar: string;
   stars: number;
   currentStreak: number;
+  lastActivityDate: string | null;
+  totalLessons: number;
 };
 
 // Storybook-themed avatar backgrounds
@@ -26,6 +28,25 @@ const avatarColors: Record<string, { bg: string; border: string }> = {
   "🌈": { bg: "bg-garden-green-light", border: "border-garden-green" },
   "🐶": { bg: "bg-sunshine-light", border: "border-sunshine-dark" },
 };
+
+function formatLastActivity(dateStr: string | null): string {
+  if (!dateStr) return "חדש!";
+  
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return "עכשיו";
+  if (diffMins < 60) return `לפני ${diffMins} דקות`;
+  if (diffHours < 24) return `לפני ${diffHours} שעות`;
+  if (diffDays === 1) return "אתמול";
+  if (diffDays < 7) return `לפני ${diffDays} ימים`;
+  
+  return date.toLocaleDateString("he-IL", { day: "numeric", month: "short" });
+}
 
 export default function ChildrenPage() {
   const router = useRouter();
@@ -68,7 +89,7 @@ export default function ChildrenPage() {
 
       if (res.ok) {
         const data = await res.json();
-        setChildren([...children, data.child]);
+        setChildren([...children, { ...data.child, lastActivityDate: null, totalLessons: 0 }]);
         setShowAddModal(false);
         setNewChildName("");
         setNewChildAvatar("⭐");
@@ -81,7 +102,7 @@ export default function ChildrenPage() {
   }
 
   function handleSelectChild(childId: string) {
-    // Save selected child to localStorage and go to topics
+    // Save selected child to localStorage and go to dashboard (main hub)
     localStorage.setItem("selectedChildId", childId);
     const child = children.find(c => c.id === childId);
     if (child) {
@@ -90,7 +111,7 @@ export default function ChildrenPage() {
         avatar: child.avatar,
       }));
     }
-    router.push("/topics");
+    router.push("/dashboard");
   }
 
   if (isLoading) {
@@ -205,13 +226,21 @@ export default function ChildrenPage() {
                   </motion.span>
                 </div>
                 <h3 className="font-bold font-heading text-text-dark mb-1">{child.name}</h3>
-                <div className="flex items-center justify-center gap-3 text-sm text-text-light">
+                
+                {/* Stats row */}
+                <div className="flex items-center justify-center gap-3 text-sm text-text-light mb-2">
                   <span className="flex items-center gap-1">
                     <span>⭐</span> {child.stars}
                   </span>
                   <span className="flex items-center gap-1">
                     <span>🔥</span> {child.currentStreak}
                   </span>
+                </div>
+                
+                {/* Last activity */}
+                <div className="flex items-center justify-center gap-1 text-xs text-text-light">
+                  <Clock className="w-3 h-3" />
+                  <span>{formatLastActivity(child.lastActivityDate)}</span>
                 </div>
               </motion.button>
             );

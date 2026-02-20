@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { LESSON_TOPICS } from "@/lib/constants";
 import { getOnboardingData } from "@/lib/onboarding";
+import { PageContainer } from "@/components/navigation";
 import type { LessonTopic } from "@/lib/types";
 
 // Storybook-themed topic colors
@@ -38,68 +39,15 @@ export default function TopicsPage() {
   }
 
   return (
-    <main className="fixed inset-0 bg-storybook overflow-hidden relative">
-      {/* Storybook decorations */}
-      <div className="storybook-decorations">
-        {/* Floating leaves */}
-        <motion.span
-          className="absolute text-3xl opacity-25"
-          style={{ top: "10%", left: "5%" }}
-          animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🍃
-        </motion.span>
-        <motion.span
-          className="absolute text-2xl opacity-20"
-          style={{ bottom: "25%", right: "8%" }}
-          animate={{ y: [0, -8, 0], rotate: [0, -3, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        >
-          🌿
-        </motion.span>
-        
-        {/* Floating flowers */}
-        <motion.span
-          className="absolute text-3xl opacity-35"
-          style={{ top: "20%", right: "10%" }}
-          animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🌸
-        </motion.span>
-        <motion.span
-          className="absolute text-2xl opacity-30"
-          style={{ bottom: "15%", left: "12%" }}
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        >
-          🌷
-        </motion.span>
-        
-        {/* Butterfly */}
-        <motion.span
-          className="absolute text-2xl opacity-40"
-          style={{ top: "45%", left: "3%" }}
-          animate={{ 
-            x: [0, 25, 0], 
-            y: [0, -15, 0],
-          }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🦋
-        </motion.span>
-      </div>
-
-      {/* Warm vignette */}
-      <div className="vignette" />
-
-      {/* Content - centered */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-        
+    <PageContainer
+      title="בחירת נושא"
+      showBottomNav={true}
+      showBack={true}
+    >
+      <div className="max-w-lg mx-auto flex flex-col items-center py-4">
         {/* Header */}
         <motion.div
-          className="text-center mb-4"
+          className="text-center mb-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -128,7 +76,7 @@ export default function TopicsPage() {
 
         {/* Topic grid - Book covers style */}
         <motion.div
-          className="card-storybook p-4 w-full max-w-sm mb-4 border-3 border-wood-light"
+          className="card-storybook p-4 w-full max-w-sm mb-6 border-3 border-wood-light"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -198,6 +146,6 @@ export default function TopicsPage() {
           </span>
         </motion.button>
       </div>
-    </main>
+    </PageContainer>
   );
 }
