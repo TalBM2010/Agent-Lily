@@ -102,7 +102,7 @@ export default function LettersGamePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          text: `${letter.upper}. ${letter.sound}.`,
+          text: letter.sound,
         }),
       });
 
