@@ -50,8 +50,8 @@ export function AchievementPopup({
       `}
     >
       <div 
-        className="bg-white rounded-2xl shadow-2xl p-4 flex items-center gap-4
-                   border-2 border-yellow-400 min-w-[280px]"
+        className="card-storybook rounded-2xl shadow-warm-xl p-4 flex items-center gap-4
+                   border-3 border-sunshine min-w-[280px]"
         onClick={onClose}
       >
         {/* Emoji */}
@@ -59,19 +59,19 @@ export function AchievementPopup({
 
         {/* Content */}
         <div className="flex-1">
-          <div className="text-xs text-yellow-600 font-medium mb-0.5">
-            הישג חדש!
+          <div className="text-xs text-sunshine-dark font-semibold mb-0.5">
+            🌟 הישג חדש!
           </div>
-          <div className="font-bold text-gray-800">
+          <div className="font-bold font-heading text-text-dark">
             {achievement.nameHe}
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-text-light">
             {achievement.descriptionHe}
           </div>
         </div>
 
-        {/* Star burst */}
-        <div className="text-2xl">🌟</div>
+        {/* Star */}
+        <div className="text-2xl">⭐</div>
       </div>
     </div>
   );

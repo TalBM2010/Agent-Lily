@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Heebo, Rubik, Nunito } from "next/font/google";
+import { Heebo, Rubik, Nunito, Varela_Round, Quicksand } from "next/font/google";
 import "./globals.css";
 
 // Hebrew fonts
@@ -15,7 +15,21 @@ const rubik = Rubik({
   weight: ["500", "600", "700", "800"],
 });
 
-// English font (for lessons)
+// Hebrew Headings - Varela Round (rounded, friendly)
+const varelaRound = Varela_Round({
+  variable: "--font-varela-round",
+  subsets: ["latin", "hebrew"],
+  weight: "400",
+});
+
+// English font - Quicksand (playful, rounded)
+const quicksand = Quicksand({
+  variable: "--font-quicksand",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+// English fallback - Nunito
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
@@ -23,8 +37,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "לילי ✨ מורה לאנגלית",
-  description: "למדי אנגלית עם לילי הפיה הקסומה!",
+  title: "לילי 🌸 מורה לאנגלית",
+  description: "למדי אנגלית עם לילי בספר הסיפורים הקסום!",
 };
 
 export default function RootLayout({
@@ -38,10 +52,13 @@ export default function RootLayout({
         className={`
           ${heebo.variable} 
           ${rubik.variable} 
+          ${varelaRound.variable}
+          ${quicksand.variable}
           ${nunito.variable} 
           font-sans antialiased 
-          bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 
+          bg-paper
           min-h-screen
+          text-text-dark
         `}
       >
         {children}

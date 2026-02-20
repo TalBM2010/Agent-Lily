@@ -252,9 +252,9 @@ export default function LettersGamePage() {
     return (
       <PageContainer title="גלי האותיות" showBack={true}>
         <div className="max-w-lg mx-auto space-y-4">
-          {/* Progress bar */}
+          {/* Progress bar - Storybook style */}
           <motion.div
-            className="bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
+            className="card-storybook p-3"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -265,33 +265,37 @@ export default function LettersGamePage() {
                   className={`
                     h-2 flex-1 rounded-full transition-colors
                     ${learnedLetters.has(letter.upper) 
-                      ? "bg-gradient-to-r from-green-400 to-emerald-500" 
+                      ? "bg-garden-green" 
                       : i === currentLetterIndex
-                        ? "bg-purple-400"
-                        : "bg-gray-200"
+                        ? "bg-sunshine"
+                        : "bg-cream-200"
                     }
                   `}
                 />
               ))}
             </div>
-            <p className="text-center text-xs text-gray-500 mt-1">
+            <p className="text-center text-xs text-text-light mt-1.5">
               {learnedLetters.size} / {ALPHABET.length} אותיות נלמדו
             </p>
           </motion.div>
 
-          {/* Main Letter Card */}
+          {/* Main Letter Card - Book page style */}
           <motion.div
-            className="bg-white/90 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/50 text-center"
+            className="card-storybook p-8 text-center border-3 border-wood-light"
             key={currentLetterIndex}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
           >
+            {/* Corner decorations */}
+            <div className="absolute top-3 left-3 text-lg opacity-30">🌿</div>
+            <div className="absolute top-3 right-3 text-lg opacity-30">🌸</div>
+            
             {/* Letter display */}
             <div className="mb-6">
               <motion.div
-                className="text-8xl font-bold font-english text-transparent bg-clip-text bg-gradient-to-br from-purple-600 to-pink-500"
-                animate={{ scale: [1, 1.05, 1] }}
+                className="text-8xl font-bold font-english text-garden-green-dark"
+                animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 {currentLetter.upper}{currentLetter.lower}
@@ -299,7 +303,7 @@ export default function LettersGamePage() {
               
               {learnedLetters.has(currentLetter.upper) && (
                 <motion.div
-                  className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full mt-2"
+                  className="inline-flex items-center gap-1 bg-garden-green-light text-garden-green-dark px-3 py-1 rounded-full mt-2 border border-garden-green"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                 >
@@ -309,13 +313,14 @@ export default function LettersGamePage() {
               )}
             </div>
 
-            {/* Sound button */}
+            {/* Sound button - Flower style */}
             <motion.button
               onClick={() => playSound(currentLetter)}
               className={`
                 mx-auto mb-4 w-20 h-20 rounded-full
-                bg-gradient-to-br from-purple-500 to-pink-500
-                text-white shadow-lg flex items-center justify-center
+                bg-lily-gradient
+                text-white shadow-lily flex items-center justify-center
+                border-3 border-lily-pink-light
                 ${isPlaying ? "animate-pulse" : ""}
               `}
               whileTap={{ scale: 0.9 }}
@@ -326,19 +331,19 @@ export default function LettersGamePage() {
 
             {/* Sound info */}
             <div className="space-y-2">
-              <p className="text-2xl font-english font-bold text-gray-700">
+              <p className="text-2xl font-english font-bold text-text-dark">
                 "{currentLetter.sound}"
               </p>
               <button
                 onClick={() => setShowHint(!showHint)}
-                className="text-sm text-purple-600 underline"
+                className="text-sm text-garden-green-dark underline"
               >
                 {showHint ? "הסתרת עזרה" : "איך מבטאים?"}
               </button>
               <AnimatePresence>
                 {showHint && (
                   <motion.p
-                    className="text-lg text-gray-500"
+                    className="text-lg text-text-light"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
@@ -355,10 +360,10 @@ export default function LettersGamePage() {
             <motion.button
               onClick={goToPrevLetter}
               disabled={currentLetterIndex === 0}
-              className="p-4 bg-white/80 rounded-full shadow-lg disabled:opacity-40"
+              className="p-4 card-storybook disabled:opacity-40"
               whileTap={{ scale: 0.9 }}
             >
-              <ChevronRight className="w-6 h-6 text-gray-600" />
+              <ChevronRight className="w-6 h-6 text-text-dark" />
             </motion.button>
 
             <motion.button
@@ -366,7 +371,7 @@ export default function LettersGamePage() {
                 markAsLearned();
                 goToNextLetter();
               }}
-              className="flex-1 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl shadow-lg"
+              className="flex-1 btn-primary"
               whileTap={{ scale: 0.98 }}
             >
               {learnedLetters.has(currentLetter.upper) ? "הבא!" : "למדתי! ✨"}
@@ -375,10 +380,10 @@ export default function LettersGamePage() {
             <motion.button
               onClick={goToNextLetter}
               disabled={currentLetterIndex === ALPHABET.length - 1}
-              className="p-4 bg-white/80 rounded-full shadow-lg disabled:opacity-40"
+              className="p-4 card-storybook disabled:opacity-40"
               whileTap={{ scale: 0.9 }}
             >
-              <ChevronLeft className="w-6 h-6 text-gray-600" />
+              <ChevronLeft className="w-6 h-6 text-text-dark" />
             </motion.button>
           </div>
 
@@ -386,24 +391,24 @@ export default function LettersGamePage() {
           <div className="grid grid-cols-2 gap-3 mt-6">
             <motion.button
               onClick={() => startQuiz("listen")}
-              className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white p-4 rounded-2xl shadow-lg"
+              className="card-storybook p-4 text-center border-2 border-story-blue hover:bg-story-blue-light transition-colors"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Volume2 className="w-6 h-6 mx-auto mb-2" />
-              <span className="font-bold">חידון שמיעה</span>
-              <p className="text-xs text-white/80">מצאי את האות ששמעת</p>
+              <Volume2 className="w-6 h-6 mx-auto mb-2 text-story-blue-dark" />
+              <span className="font-bold font-heading text-text-dark block">חידון שמיעה</span>
+              <p className="text-xs text-text-light">מצאי את האות ששמעת</p>
             </motion.button>
 
             <motion.button
               onClick={() => startQuiz("match")}
-              className="bg-gradient-to-br from-amber-500 to-orange-500 text-white p-4 rounded-2xl shadow-lg"
+              className="card-storybook p-4 text-center border-2 border-sunshine hover:bg-sunshine-light transition-colors"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span className="text-2xl block mb-2">Aa</span>
-              <span className="font-bold">חידון התאמה</span>
-              <p className="text-xs text-white/80">התאימי גדולות לקטנות</p>
+              <span className="text-2xl block mb-2 font-english font-bold text-sunshine-dark">Aa</span>
+              <span className="font-bold font-heading text-text-dark block">חידון התאמה</span>
+              <p className="text-xs text-text-light">התאימי גדולות לקטנות</p>
             </motion.button>
           </div>
         </div>
@@ -420,20 +425,20 @@ export default function LettersGamePage() {
         <div className="max-w-lg mx-auto space-y-4">
           {/* Score display */}
           <motion.div
-            className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg"
+            className="flex items-center justify-between card-storybook p-4"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-yellow-500" />
-              <span className="font-bold text-gray-800">{score}</span>
+              <Star className="w-5 h-5 text-sunshine-dark" />
+              <span className="font-bold text-text-dark">{score}</span>
             </div>
-            <div className="text-gray-500">
+            <div className="text-text-light">
               שאלה {questionsAnswered + 1} / 10
             </div>
-            <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-16 h-2 bg-cream-200 rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                className="h-full bg-garden-gradient"
                 initial={{ width: 0 }}
                 animate={{ width: `${(questionsAnswered / 10) * 100}%` }}
               />
@@ -443,17 +448,17 @@ export default function LettersGamePage() {
           {/* Question */}
           {quizQuestion && (
             <motion.div
-              className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl text-center"
+              className="card-storybook p-6 text-center border-3 border-wood-light"
               key={questionsAnswered}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
             >
               {isListenQuiz ? (
                 <>
-                  <p className="text-lg text-gray-600 mb-4">איזו אות שמעת?</p>
+                  <p className="text-lg text-text-dark mb-4 font-heading">איזו אות שמעת?</p>
                   <motion.button
                     onClick={() => playSound(quizQuestion.options[quizQuestion.correctIndex])}
-                    className="mx-auto w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg flex items-center justify-center"
+                    className="mx-auto w-24 h-24 rounded-full bg-story-gradient text-white shadow-warm-lg flex items-center justify-center border-3 border-story-blue-light"
                     whileTap={{ scale: 0.9 }}
                     animate={isPlaying ? { scale: [1, 1.1, 1] } : {}}
                     transition={{ duration: 0.5, repeat: isPlaying ? Infinity : 0 }}
@@ -463,9 +468,9 @@ export default function LettersGamePage() {
                 </>
               ) : (
                 <>
-                  <p className="text-lg text-gray-600 mb-4">מצאי את האות הקטנה:</p>
+                  <p className="text-lg text-text-dark mb-4 font-heading">מצאי את האות הקטנה:</p>
                   <motion.div
-                    className="text-7xl font-bold font-english text-transparent bg-clip-text bg-gradient-to-br from-purple-600 to-pink-500"
+                    className="text-7xl font-bold font-english text-garden-green-dark"
                     animate={{ scale: [1, 1.02, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
@@ -484,12 +489,12 @@ export default function LettersGamePage() {
                 const isCorrectAnswer = i === quizQuestion.correctIndex;
                 const showResult = selectedAnswer !== null;
 
-                let buttonStyle = "bg-white/90 text-gray-800 border-2 border-transparent";
+                let buttonStyle = "card-storybook";
                 if (showResult) {
                   if (isCorrectAnswer) {
-                    buttonStyle = "bg-green-100 text-green-800 border-2 border-green-500";
+                    buttonStyle = "bg-garden-green-light border-3 border-garden-green";
                   } else if (isSelected && !isCorrect) {
-                    buttonStyle = "bg-red-100 text-red-800 border-2 border-red-500";
+                    buttonStyle = "bg-lily-pink-light border-3 border-lily-pink-dark";
                   }
                 }
 
@@ -499,7 +504,7 @@ export default function LettersGamePage() {
                     onClick={() => handleQuizAnswer(i)}
                     disabled={selectedAnswer !== null}
                     className={`
-                      p-6 rounded-2xl shadow-lg font-english text-4xl font-bold
+                      p-6 rounded-xl font-english text-4xl font-bold
                       ${buttonStyle}
                       disabled:cursor-default
                     `}
@@ -509,16 +514,18 @@ export default function LettersGamePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
                   >
-                    {isListenQuiz ? (
-                      `${option.upper}${option.lower}`
-                    ) : (
-                      option.lower
-                    )}
+                    <span className="text-text-dark">
+                      {isListenQuiz ? (
+                        `${option.upper}${option.lower}`
+                      ) : (
+                        option.lower
+                      )}
+                    </span>
                     {showResult && isCorrectAnswer && (
-                      <Check className="w-6 h-6 mx-auto mt-2 text-green-600" />
+                      <Check className="w-6 h-6 mx-auto mt-2 text-garden-green-dark" />
                     )}
                     {showResult && isSelected && !isCorrect && (
-                      <X className="w-6 h-6 mx-auto mt-2 text-red-600" />
+                      <X className="w-6 h-6 mx-auto mt-2 text-lily-pink-dark" />
                     )}
                   </motion.button>
                 );
@@ -531,10 +538,10 @@ export default function LettersGamePage() {
             {isCorrect !== null && (
               <motion.div
                 className={`
-                  text-center p-4 rounded-2xl font-bold text-lg
+                  text-center p-4 rounded-xl font-bold text-lg
                   ${isCorrect 
-                    ? "bg-green-100 text-green-700" 
-                    : "bg-red-100 text-red-700"
+                    ? "bg-garden-green-light text-garden-green-dark border border-garden-green" 
+                    : "bg-lily-pink-light text-lily-pink-dark border border-lily-pink"
                   }
                 `}
                 initial={{ opacity: 0, y: 20 }}
@@ -579,23 +586,23 @@ export default function LettersGamePage() {
               🎉
             </motion.div>
 
-            <h1 className="text-3xl font-bold text-gray-800">כל הכבוד!</h1>
+            <h1 className="text-3xl font-bold font-heading text-text-dark">כל הכבוד!</h1>
             
             {/* Score card */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-xl">
+            <div className="card-storybook p-6 border-3 border-wood-light">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <Trophy className="w-8 h-8 text-yellow-500" />
-                <span className="text-4xl font-bold text-gray-800">{score}/10</span>
+                <Trophy className="w-8 h-8 text-sunshine-dark" />
+                <span className="text-4xl font-bold text-text-dark">{score}/10</span>
               </div>
               
-              <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-4">
+              <div className="w-full h-4 bg-cream-200 rounded-full overflow-hidden mb-4 border border-cream-300">
                 <motion.div
                   className={`h-full ${
                     percentage >= 80 
-                      ? "bg-gradient-to-r from-green-400 to-emerald-500" 
+                      ? "bg-garden-gradient" 
                       : percentage >= 50
-                        ? "bg-gradient-to-r from-yellow-400 to-orange-500"
-                        : "bg-gradient-to-r from-red-400 to-pink-500"
+                        ? "bg-sunshine-gradient"
+                        : "bg-lily-gradient"
                   }`}
                   initial={{ width: 0 }}
                   animate={{ width: `${percentage}%` }}
@@ -605,13 +612,13 @@ export default function LettersGamePage() {
 
               {/* Stars earned */}
               <motion.div
-                className="flex items-center justify-center gap-2 bg-yellow-50 p-3 rounded-xl"
+                className="flex items-center justify-center gap-2 bg-sunshine-light p-3 rounded-xl border border-sunshine"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 1 }}
               >
-                <Star className="w-6 h-6 text-yellow-500" />
-                <span className="text-xl font-bold text-yellow-700">
+                <Star className="w-6 h-6 text-sunshine-dark" />
+                <span className="text-xl font-bold text-text-dark">
                   +{starsEarned} כוכבים!
                 </span>
               </motion.div>
@@ -621,7 +628,7 @@ export default function LettersGamePage() {
             <div className="space-y-3">
               <motion.button
                 onClick={resetGame}
-                className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2"
+                className="w-full btn-primary flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -631,7 +638,7 @@ export default function LettersGamePage() {
 
               <motion.button
                 onClick={() => router.push("/games")}
-                className="w-full py-4 bg-white/80 text-gray-700 font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2"
+                className="w-full btn-outline flex items-center justify-center gap-2"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

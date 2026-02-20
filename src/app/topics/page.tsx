@@ -7,17 +7,18 @@ import { LESSON_TOPICS } from "@/lib/constants";
 import { getOnboardingData } from "@/lib/onboarding";
 import type { LessonTopic } from "@/lib/types";
 
-const topicGradients: Record<LessonTopic, string> = {
-  animals: "from-amber-400 to-orange-500",
-  colors: "from-pink-400 to-purple-500",
-  family: "from-rose-400 to-pink-500",
-  food: "from-yellow-400 to-orange-500",
-  numbers: "from-blue-400 to-indigo-500",
-  body: "from-green-400 to-teal-500",
-  clothes: "from-fuchsia-400 to-purple-500",
-  weather: "from-sky-400 to-blue-500",
-  school: "from-emerald-400 to-green-500",
-  toys: "from-violet-400 to-purple-500",
+// Storybook-themed topic colors
+const topicColors: Record<LessonTopic, { bg: string; border: string; selected: string }> = {
+  animals: { bg: "bg-sunshine-light", border: "border-sunshine", selected: "bg-sunshine" },
+  colors: { bg: "bg-lily-pink-light", border: "border-lily-pink", selected: "bg-lily-pink" },
+  family: { bg: "bg-lily-pink-50", border: "border-lily-pink-light", selected: "bg-lily-pink-light" },
+  food: { bg: "bg-sunshine-50", border: "border-sunshine-light", selected: "bg-sunshine-light" },
+  numbers: { bg: "bg-story-blue-light", border: "border-story-blue", selected: "bg-story-blue" },
+  body: { bg: "bg-garden-green-light", border: "border-garden-green", selected: "bg-garden-green" },
+  clothes: { bg: "bg-lily-pink-light", border: "border-lily-pink", selected: "bg-lily-pink" },
+  weather: { bg: "bg-story-blue-50", border: "border-story-blue-light", selected: "bg-story-blue-light" },
+  school: { bg: "bg-garden-green-50", border: "border-garden-green-light", selected: "bg-garden-green-light" },
+  toys: { bg: "bg-sunshine-light", border: "border-sunshine", selected: "bg-sunshine" },
 };
 
 export default function TopicsPage() {
@@ -37,25 +38,61 @@ export default function TopicsPage() {
   }
 
   return (
-    <main className="fixed inset-0 bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 overflow-hidden">
-      {/* Background blurs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-0 w-56 h-56 bg-purple-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-0 w-64 h-64 bg-pink-200/40 rounded-full blur-3xl" />
+    <main className="fixed inset-0 bg-storybook overflow-hidden relative">
+      {/* Storybook decorations */}
+      <div className="storybook-decorations">
+        {/* Floating leaves */}
+        <motion.span
+          className="absolute text-3xl opacity-25"
+          style={{ top: "10%", left: "5%" }}
+          animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🍃
+        </motion.span>
+        <motion.span
+          className="absolute text-2xl opacity-20"
+          style={{ bottom: "25%", right: "8%" }}
+          animate={{ y: [0, -8, 0], rotate: [0, -3, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          🌿
+        </motion.span>
+        
+        {/* Floating flowers */}
+        <motion.span
+          className="absolute text-3xl opacity-35"
+          style={{ top: "20%", right: "10%" }}
+          animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🌸
+        </motion.span>
+        <motion.span
+          className="absolute text-2xl opacity-30"
+          style={{ bottom: "15%", left: "12%" }}
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        >
+          🌷
+        </motion.span>
+        
+        {/* Butterfly */}
+        <motion.span
+          className="absolute text-2xl opacity-40"
+          style={{ top: "45%", left: "3%" }}
+          animate={{ 
+            x: [0, 25, 0], 
+            y: [0, -15, 0],
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🦋
+        </motion.span>
       </div>
 
-      {/* Sparkles */}
-      {[...Array(4)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute text-yellow-400/40 text-sm"
-          style={{ top: `${25 + i * 18}%`, left: `${15 + i * 22}%` }}
-          animate={{ y: [0, -10, 0], opacity: [0.2, 0.5, 0.2] }}
-          transition={{ duration: 3, repeat: Infinity, delay: i * 0.4 }}
-        >
-          ✦
-        </motion.div>
-      ))}
+      {/* Warm vignette */}
+      <div className="vignette" />
 
       {/* Content - centered */}
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
@@ -76,57 +113,65 @@ export default function TopicsPage() {
             </motion.span>
             <motion.span
               className="absolute -right-4 -bottom-1 text-2xl"
-              animate={{ rotate: [0, 8, -5, 0] }}
+              animate={{ rotate: [0, 8, -5, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 3, repeat: Infinity }}
             >
-              🧚
+              🌸
             </motion.span>
           </div>
           
-          <h1 className="text-2xl font-bold text-gray-800 mb-0.5">
+          <h1 className="text-2xl font-bold font-heading text-text-dark mb-0.5">
             {childName ? `מה נלמד, ${childName}?` : "מה נלמד היום?"}
           </h1>
-          <p className="text-sm text-purple-600/80">בחרי נושא!</p>
+          <p className="text-sm text-garden-green-dark font-medium">בחרי נושא!</p>
         </motion.div>
 
-        {/* Topic grid */}
+        {/* Topic grid - Book covers style */}
         <motion.div
-          className="bg-white/60 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-white/50 w-full max-w-sm mb-4"
+          className="card-storybook p-4 w-full max-w-sm mb-4 border-3 border-wood-light"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
           <div className="grid grid-cols-3 gap-2">
-            {LESSON_TOPICS.map((topic) => (
-              <motion.button
-                key={topic.id}
-                onClick={() => setSelectedTopic(topic.id)}
-                whileTap={{ scale: 0.95 }}
-                className={`
-                  relative flex flex-col items-center gap-1 p-3
-                  rounded-xl transition-all duration-200
-                  ${selectedTopic === topic.id
-                    ? `bg-gradient-to-br ${topicGradients[topic.id]} shadow-md`
-                    : "bg-white active:bg-gray-50 shadow-sm"
-                  }
-                `}
-              >
-                {selectedTopic === topic.id && (
-                  <motion.div
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                  >
-                    <span className="text-green-500 text-xs">✓</span>
-                  </motion.div>
-                )}
-                
-                <span className="text-2xl">{topic.emoji}</span>
-                <span className={`text-xs font-bold ${selectedTopic === topic.id ? "text-white" : "text-gray-700"}`}>
-                  {topic.hebrewLabel}
-                </span>
-              </motion.button>
-            ))}
+            {LESSON_TOPICS.map((topic, index) => {
+              const colors = topicColors[topic.id];
+              const isSelected = selectedTopic === topic.id;
+              
+              return (
+                <motion.button
+                  key={topic.id}
+                  onClick={() => setSelectedTopic(topic.id)}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.15 + index * 0.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`
+                    relative flex flex-col items-center gap-1 p-3
+                    rounded-xl transition-all duration-200 border-2
+                    ${isSelected
+                      ? `${colors.selected} ${colors.border} shadow-warm`
+                      : `${colors.bg} border-transparent hover:border-cream-300`
+                    }
+                  `}
+                >
+                  {isSelected && (
+                    <motion.div
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-garden-green rounded-full flex items-center justify-center shadow-sm"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                    >
+                      <span className="text-white text-xs">✓</span>
+                    </motion.div>
+                  )}
+                  
+                  <span className="text-2xl">{topic.emoji}</span>
+                  <span className={`text-xs font-bold ${isSelected ? "text-text-dark" : "text-text-medium"}`}>
+                    {topic.hebrewLabel}
+                  </span>
+                </motion.button>
+              );
+            })}
           </div>
         </motion.div>
 
@@ -135,11 +180,11 @@ export default function TopicsPage() {
           onClick={handleStart}
           disabled={!selectedTopic}
           className={`
-            relative px-10 py-4 rounded-full text-lg font-bold
+            relative px-10 py-4 rounded-full text-lg font-bold font-heading
             transition-all duration-300
             ${selectedTopic
-              ? "text-white bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 shadow-lg shadow-purple-500/30 active:scale-95"
-              : "text-gray-400 bg-gray-200 cursor-not-allowed"
+              ? "btn-primary"
+              : "bg-cream-200 text-text-light cursor-not-allowed"
             }
           `}
           initial={{ opacity: 0 }}

@@ -62,12 +62,61 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen min-h-dvh bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center px-4">
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-10 w-64 h-64 bg-purple-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-10 w-72 h-72 bg-pink-200/40 rounded-full blur-3xl" />
+    <main className="min-h-screen min-h-dvh bg-storybook flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Storybook decorations */}
+      <div className="storybook-decorations">
+        {/* Floating leaves */}
+        <motion.span
+          className="absolute text-3xl opacity-30"
+          style={{ top: "12%", right: "10%" }}
+          animate={{ y: [0, -12, 0], rotate: [0, -5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🍃
+        </motion.span>
+        <motion.span
+          className="absolute text-2xl opacity-25"
+          style={{ bottom: "20%", left: "8%" }}
+          animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+        >
+          🌿
+        </motion.span>
+        
+        {/* Floating flowers */}
+        <motion.span
+          className="absolute text-3xl opacity-40"
+          style={{ top: "25%", left: "10%" }}
+          animate={{ y: [0, -6, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🌷
+        </motion.span>
+        <motion.span
+          className="absolute text-2xl opacity-35"
+          style={{ bottom: "30%", right: "15%" }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        >
+          🌸
+        </motion.span>
+        
+        {/* Little bird */}
+        <motion.span
+          className="absolute text-2xl opacity-45"
+          style={{ top: "40%", right: "5%" }}
+          animate={{ 
+            x: [0, -20, 0], 
+            y: [0, -15, 0],
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🐦
+        </motion.span>
       </div>
+      
+      {/* Soft vignette */}
+      <div className="vignette" />
 
       <motion.div
         className="relative z-10 w-full max-w-sm"
@@ -76,35 +125,42 @@ export default function SignupPage() {
       >
         {/* Logo */}
         <div className="text-center mb-6">
-          <motion.span 
-            className="text-6xl inline-block"
+          <motion.div 
+            className="relative inline-block"
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            🧚
-          </motion.span>
-          <h1 className="text-2xl font-bold text-gray-800 mt-2">הצטרפו ללילי!</h1>
-          <p className="text-purple-600/80">צרו חשבון והתחילו ללמוד אנגלית</p>
+            <span className="text-6xl">🌸</span>
+            <motion.span
+              className="absolute -top-1 -left-1 text-xl"
+              animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.1, 0.8] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+            >
+              ✨
+            </motion.span>
+          </motion.div>
+          <h1 className="text-2xl font-bold font-heading text-text-dark mt-2">הצטרפו ללילי!</h1>
+          <p className="text-garden-green-dark font-medium">צרו חשבון והתחילו ללמוד אנגלית</p>
         </div>
 
-        {/* Form Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+        {/* Form Card - Storybook style */}
+        <div className="card-storybook p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-500 text-sm p-3 rounded-xl text-center">
+              <div className="bg-lily-pink-light text-lily-pink-dark text-sm p-3 rounded-xl text-center border border-lily-pink">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
+              <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
                 שם
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-purple-100 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-100 transition-all text-right"
+                className="input-storybook text-right"
                 placeholder="השם שלך"
                 required
                 minLength={2}
@@ -112,14 +168,14 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
+              <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
                 אימייל
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-purple-100 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-100 transition-all"
+                className="input-storybook"
                 placeholder="your@email.com"
                 dir="ltr"
                 required
@@ -127,14 +183,14 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
+              <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
                 סיסמה
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-purple-100 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-100 transition-all"
+                className="input-storybook"
                 placeholder="לפחות 6 תווים"
                 dir="ltr"
                 required
@@ -145,22 +201,22 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-xl text-white font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 shadow-lg disabled:opacity-50 transition-all"
+              className="w-full btn-primary"
             >
-              {isLoading ? "נרשם..." : "הרשמה"}
+              {isLoading ? "נרשם..." : "הרשמה 🌟"}
             </button>
           </form>
 
           <div className="my-4 flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-sm text-gray-400">או</span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-cream-300" />
+            <span className="text-sm text-text-light">או</span>
+            <div className="flex-1 h-px bg-cream-300" />
           </div>
 
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full py-3 rounded-xl font-medium border-2 border-gray-200 hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+            className="w-full btn-outline flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -173,9 +229,9 @@ export default function SignupPage() {
         </div>
 
         {/* Login link */}
-        <p className="text-center mt-4 text-gray-600">
+        <p className="text-center mt-4 text-text-medium">
           כבר יש לך חשבון?{" "}
-          <Link href="/login" className="text-purple-600 font-medium hover:underline">
+          <Link href="/login" className="text-garden-green-dark font-semibold hover:underline">
             התחברות
           </Link>
         </p>

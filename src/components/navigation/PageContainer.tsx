@@ -31,13 +31,53 @@ export function PageContainer({
   className = "",
 }: PageContainerProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100">
-      {/* Background decorations */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-0 w-64 h-64 bg-purple-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-0 w-72 h-72 bg-pink-200/40 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-yellow-200/30 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-storybook relative overflow-hidden">
+      {/* Storybook decorations */}
+      <div className="storybook-decorations">
+        {/* Floating leaves */}
+        <motion.span
+          className="absolute text-2xl opacity-20"
+          style={{ top: "12%", left: "3%" }}
+          animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🍃
+        </motion.span>
+        <motion.span
+          className="absolute text-xl opacity-15"
+          style={{ top: "35%", right: "5%" }}
+          animate={{ y: [0, -6, 0], rotate: [0, -3, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          🌿
+        </motion.span>
+        
+        {/* Floating flower */}
+        <motion.span
+          className="absolute text-2xl opacity-25"
+          style={{ bottom: "25%", left: "5%" }}
+          animate={{ y: [0, -10, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🌸
+        </motion.span>
+        
+        {/* Subtle butterfly */}
+        <motion.span
+          className="absolute text-lg opacity-30"
+          style={{ top: "50%", right: "8%" }}
+          animate={{ 
+            x: [0, 15, 0], 
+            y: [0, -10, 0]
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🦋
+        </motion.span>
       </div>
+
+      {/* Warm vignette */}
+      <div className="vignette" />
 
       {/* Top navigation */}
       {showTopNav && (

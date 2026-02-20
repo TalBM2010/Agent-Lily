@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Gamepad2, Lock, Star, Sparkles } from "lucide-react";
+import { Lock, Star, Sparkles } from "lucide-react";
 import { PageContainer } from "@/components/navigation";
 
 interface GameCard {
@@ -13,7 +13,7 @@ interface GameCard {
   description: string;
   descriptionHe: string;
   emoji: string;
-  gradient: string;
+  color: { bg: string; border: string; shadow: string };
   href: string;
   requiredStars?: number;
   isNew?: boolean;
@@ -27,7 +27,11 @@ const games: GameCard[] = [
     description: "Learn the English alphabet",
     descriptionHe: "לומדים את ה-ABC!",
     emoji: "🔤",
-    gradient: "from-purple-500 to-pink-500",
+    color: { 
+      bg: "bg-story-blue-light", 
+      border: "border-story-blue",
+      shadow: "shadow-story-blue/20"
+    },
     href: "/games/letters",
     isNew: true,
   },
@@ -38,7 +42,11 @@ const games: GameCard[] = [
     description: "Match words with pictures",
     descriptionHe: "חברי מילים לתמונות",
     emoji: "🎯",
-    gradient: "from-blue-500 to-cyan-500",
+    color: { 
+      bg: "bg-garden-green-light", 
+      border: "border-garden-green",
+      shadow: "shadow-garden-green/20"
+    },
     href: "/games/words",
     requiredStars: 50,
   },
@@ -49,7 +57,11 @@ const games: GameCard[] = [
     description: "Learn colors in English",
     descriptionHe: "לומדים צבעים באנגלית",
     emoji: "🎨",
-    gradient: "from-pink-500 to-orange-500",
+    color: { 
+      bg: "bg-lily-pink-light", 
+      border: "border-lily-pink",
+      shadow: "shadow-lily-pink/20"
+    },
     href: "/games/colors",
     requiredStars: 100,
   },
@@ -60,7 +72,11 @@ const games: GameCard[] = [
     description: "Master numbers 1-20",
     descriptionHe: "שולטים במספרים",
     emoji: "🔢",
-    gradient: "from-green-500 to-emerald-500",
+    color: { 
+      bg: "bg-sunshine-light", 
+      border: "border-sunshine",
+      shadow: "shadow-sunshine/20"
+    },
     href: "/games/numbers",
     requiredStars: 150,
   },
@@ -104,11 +120,11 @@ export default function GamesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center">
+      <div className="min-h-screen bg-storybook flex items-center justify-center">
         <motion.span
           className="text-6xl"
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
+          animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
         >
           🎮
         </motion.span>
@@ -132,20 +148,20 @@ export default function GamesPage() {
           >
             🎮
           </motion.span>
-          <h1 className="text-2xl font-bold text-gray-800 mb-1">משחקים</h1>
-          <p className="text-purple-600/80">לומדים תוך כדי כיף!</p>
+          <h1 className="text-2xl font-bold font-heading text-text-dark mb-1">משחקים</h1>
+          <p className="text-garden-green-dark font-medium">לומדים תוך כדי כיף!</p>
         </motion.div>
 
-        {/* Stars Display */}
+        {/* Stars Display - Storybook style */}
         <motion.div
-          className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50 flex items-center justify-center gap-3"
+          className="card-storybook p-4 flex items-center justify-center gap-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Star className="w-6 h-6 text-yellow-500" />
-          <span className="text-2xl font-bold text-gray-800">{userStars}</span>
-          <span className="text-gray-500">כוכבים</span>
+          <Star className="w-6 h-6 text-sunshine-dark" />
+          <span className="text-2xl font-bold text-text-dark">{userStars}</span>
+          <span className="text-text-light">כוכבים</span>
         </motion.div>
 
         {/* Games Grid */}
@@ -158,41 +174,41 @@ export default function GamesPage() {
                 key={game.id}
                 onClick={() => handleGameClick(game)}
                 className={`
-                  relative w-full bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/50
+                  relative w-full card-storybook p-4
                   flex items-center gap-4 text-right overflow-hidden
-                  ${isLocked ? "opacity-60" : "hover:shadow-xl transition-shadow"}
+                  ${isLocked ? "opacity-60" : "hover:shadow-warm-lg transition-shadow"}
                 `}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
-                whileHover={!isLocked ? { scale: 1.02 } : {}}
+                whileHover={!isLocked ? { scale: 1.02, y: -2 } : {}}
                 whileTap={!isLocked ? { scale: 0.98 } : {}}
                 disabled={isLocked}
               >
-                {/* Game icon */}
+                {/* Game icon - illustrated frame style */}
                 <div className={`
-                  w-16 h-16 rounded-2xl bg-gradient-to-br ${game.gradient}
-                  flex items-center justify-center text-3xl shadow-md
+                  w-16 h-16 rounded-xl ${game.color.bg} ${game.color.border} border-3
+                  flex items-center justify-center text-3xl shadow-warm
                   ${isLocked ? "grayscale" : ""}
                 `}>
-                  {isLocked ? <Lock className="w-6 h-6 text-white" /> : game.emoji}
+                  {isLocked ? <Lock className="w-6 h-6 text-text-light" /> : game.emoji}
                 </div>
 
                 {/* Game info */}
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-gray-800 text-lg">{game.titleHe}</h3>
+                    <h3 className="font-bold font-heading text-text-dark text-lg">{game.titleHe}</h3>
                     {game.isNew && (
-                      <span className="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                      <span className="badge-new flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
                         חדש!
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500">{game.descriptionHe}</p>
+                  <p className="text-sm text-text-light">{game.descriptionHe}</p>
                   
                   {isLocked && game.requiredStars && (
-                    <div className="flex items-center gap-1 mt-1 text-amber-600">
+                    <div className="flex items-center gap-1 mt-1 text-sunshine-dark">
                       <Lock className="w-3 h-3" />
                       <span className="text-xs font-medium">
                         נדרש {game.requiredStars} ⭐ לפתיחה
@@ -203,7 +219,7 @@ export default function GamesPage() {
 
                 {/* Arrow */}
                 {!isLocked && (
-                  <span className="text-gray-400 text-xl">←</span>
+                  <span className="text-text-light text-xl">←</span>
                 )}
               </motion.button>
             );
@@ -212,7 +228,7 @@ export default function GamesPage() {
 
         {/* Coming soon hint */}
         <motion.p
-          className="text-center text-gray-500 text-sm mt-6"
+          className="text-center text-text-light text-sm mt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}

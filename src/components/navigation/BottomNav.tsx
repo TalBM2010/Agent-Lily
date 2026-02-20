@@ -17,7 +17,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 safe-area-bottom">
-      <div className="bg-white/90 backdrop-blur-lg border-t border-purple-100 shadow-lg">
+      <div className="bg-cream-50/95 backdrop-blur-lg border-t border-wood-light/30 shadow-warm-lg">
         <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -33,8 +33,8 @@ export function BottomNav() {
                   className={`
                     relative p-2 rounded-xl transition-colors duration-200
                     ${isActive 
-                      ? "bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30" 
-                      : "text-gray-500 hover:text-purple-600 hover:bg-purple-50"
+                      ? "bg-garden-gradient text-white shadow-garden" 
+                      : "text-text-light hover:text-garden-green-dark hover:bg-cream-200"
                     }
                   `}
                   whileTap={{ scale: 0.9 }}
@@ -52,7 +52,7 @@ export function BottomNav() {
                 <span
                   className={`
                     text-xs mt-1 font-medium transition-colors duration-200
-                    ${isActive ? "text-purple-600" : "text-gray-500"}
+                    ${isActive ? "text-garden-green-dark" : "text-text-light"}
                   `}
                 >
                   {item.label}

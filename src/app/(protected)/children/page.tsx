@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plus, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { CHILD_AVATARS } from "@/lib/constants";
@@ -15,15 +15,16 @@ type Child = {
   currentStreak: number;
 };
 
-const avatarGradients: Record<string, string> = {
-  "🦄": "from-pink-300 to-purple-400",
-  "🐱": "from-amber-200 to-orange-400",
-  "🐼": "from-gray-200 to-gray-400",
-  "⭐": "from-yellow-200 to-amber-400",
-  "🦋": "from-cyan-300 to-blue-400",
-  "🐰": "from-pink-200 to-rose-400",
-  "🌈": "from-pink-300 to-violet-400",
-  "🐶": "from-amber-200 to-yellow-400",
+// Storybook-themed avatar backgrounds
+const avatarColors: Record<string, { bg: string; border: string }> = {
+  "🦄": { bg: "bg-lily-pink-light", border: "border-lily-pink" },
+  "🐱": { bg: "bg-sunshine-light", border: "border-sunshine" },
+  "🐼": { bg: "bg-cream-200", border: "border-wood-light" },
+  "⭐": { bg: "bg-sunshine-light", border: "border-sunshine" },
+  "🦋": { bg: "bg-story-blue-light", border: "border-story-blue" },
+  "🐰": { bg: "bg-lily-pink-light", border: "border-lily-pink" },
+  "🌈": { bg: "bg-garden-green-light", border: "border-garden-green" },
+  "🐶": { bg: "bg-sunshine-light", border: "border-sunshine-dark" },
 };
 
 export default function ChildrenPage() {
@@ -94,155 +95,235 @@ export default function ChildrenPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center">
-        <motion.span
-          className="text-6xl"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+      <main className="min-h-screen bg-storybook flex items-center justify-center">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
         >
-          🧚
-        </motion.span>
+          <motion.span
+            className="text-6xl block"
+            animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            🌸
+          </motion.span>
+          <p className="text-text-light mt-3 font-medium">טוען...</p>
+        </motion.div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-indigo-100 via-purple-50 to-pink-100 px-4 py-8">
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-10 w-64 h-64 bg-purple-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-10 w-72 h-72 bg-pink-200/40 rounded-full blur-3xl" />
+    <main className="min-h-screen bg-storybook px-4 py-8 relative overflow-hidden">
+      {/* Storybook decorations */}
+      <div className="storybook-decorations">
+        <motion.span
+          className="absolute text-3xl opacity-25"
+          style={{ top: "10%", left: "5%" }}
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 4, repeat: Infinity }}
+        >
+          🌿
+        </motion.span>
+        <motion.span
+          className="absolute text-2xl opacity-30"
+          style={{ top: "15%", right: "8%" }}
+          animate={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
+        >
+          🍃
+        </motion.span>
+        <motion.span
+          className="absolute text-3xl opacity-35"
+          style={{ bottom: "20%", right: "5%" }}
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, delay: 1 }}
+        >
+          🌸
+        </motion.span>
+        <motion.span
+          className="absolute text-2xl opacity-40"
+          style={{ bottom: "30%", left: "10%" }}
+          animate={{ 
+            x: [0, 15, 0], 
+            y: [0, -10, 0]
+          }}
+          transition={{ duration: 6, repeat: Infinity }}
+        >
+          🦋
+        </motion.span>
       </div>
+
+      <div className="vignette" />
 
       <div className="relative z-10 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">מי לומד היום?</h1>
-            <p className="text-purple-600/80">בחרו פרופיל להמשיך</p>
+            <h1 className="text-2xl font-bold font-heading text-text-dark">מי לומד היום?</h1>
+            <p className="text-garden-green-dark font-medium">בחרו פרופיל להמשיך</p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-full transition-all"
+            className="p-2.5 text-text-light hover:text-text-dark hover:bg-cream-200 rounded-full transition-all"
             title="התנתקות"
           >
             <LogOut className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Children Grid */}
+        {/* Children Grid - Storybook character cards */}
         <div className="grid grid-cols-2 gap-4 mb-6">
-          {children.map((child) => (
-            <motion.button
-              key={child.id}
-              onClick={() => handleSelectChild(child.id)}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-lg border border-white/50 text-center hover:shadow-xl transition-all"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <div className={`w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br ${avatarGradients[child.avatar] || "from-purple-300 to-pink-400"} flex items-center justify-center shadow-md`}>
-                <span className="text-3xl">{child.avatar}</span>
-              </div>
-              <h3 className="font-bold text-gray-800 mb-1">{child.name}</h3>
-              <div className="flex items-center justify-center gap-3 text-sm text-gray-500">
-                <span>⭐ {child.stars}</span>
-                <span>🔥 {child.currentStreak}</span>
-              </div>
-            </motion.button>
-          ))}
+          {children.map((child, index) => {
+            const colors = avatarColors[child.avatar] || { bg: "bg-cream-100", border: "border-wood-light" };
+            
+            return (
+              <motion.button
+                key={child.id}
+                onClick={() => handleSelectChild(child.id)}
+                className="card-character p-5 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.03, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {/* Avatar in illustrated frame */}
+                <div className={`
+                  w-16 h-16 mx-auto mb-3 rounded-2xl 
+                  ${colors.bg} ${colors.border} border-3
+                  flex items-center justify-center 
+                  shadow-warm
+                `}>
+                  <motion.span 
+                    className="text-3xl"
+                    animate={{ scale: [1, 1.08, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+                  >
+                    {child.avatar}
+                  </motion.span>
+                </div>
+                <h3 className="font-bold font-heading text-text-dark mb-1">{child.name}</h3>
+                <div className="flex items-center justify-center gap-3 text-sm text-text-light">
+                  <span className="flex items-center gap-1">
+                    <span>⭐</span> {child.stars}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span>🔥</span> {child.currentStreak}
+                  </span>
+                </div>
+              </motion.button>
+            );
+          })}
 
           {/* Add Child Button */}
           <motion.button
             onClick={() => setShowAddModal(true)}
-            className="bg-white/50 backdrop-blur-sm rounded-2xl p-5 border-2 border-dashed border-purple-300 text-center hover:bg-white/70 transition-all flex flex-col items-center justify-center"
-            whileHover={{ scale: 1.03 }}
+            className="rounded-xl p-5 border-3 border-dashed border-wood-light text-center hover:bg-cream-100 transition-all flex flex-col items-center justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: children.length * 0.1 }}
+            whileHover={{ scale: 1.03, borderColor: "var(--wood-brown)" }}
             whileTap={{ scale: 0.97 }}
           >
-            <div className="w-16 h-16 mb-3 rounded-full bg-purple-100 flex items-center justify-center">
-              <Plus className="w-8 h-8 text-purple-500" />
+            <div className="w-16 h-16 mb-3 rounded-2xl bg-cream-200 flex items-center justify-center">
+              <Plus className="w-8 h-8 text-garden-green" />
             </div>
-            <h3 className="font-medium text-purple-600">הוספת ילד/ה</h3>
+            <h3 className="font-medium text-garden-green-dark">הוספת ילד/ה</h3>
           </motion.button>
         </div>
       </div>
 
       {/* Add Child Modal */}
-      {showAddModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        >
-          <div 
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowAddModal(false)}
-          />
+      <AnimatePresence>
+        {showAddModal && (
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
-              הוספת ילד/ה חדש/ה
-            </h2>
-            
-            <form onSubmit={handleCreateChild} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
-                  שם
-                </label>
-                <input
-                  type="text"
-                  value={newChildName}
-                  onChange={(e) => setNewChildName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-purple-100 focus:border-purple-400 focus:outline-none text-right"
-                  placeholder="שם הילד/ה"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-                  בחירת דמות
-                </label>
-                <div className="grid grid-cols-4 gap-2">
-                  {CHILD_AVATARS.map((avatar) => (
-                    <button
-                      key={avatar.emoji}
-                      type="button"
-                      onClick={() => setNewChildAvatar(avatar.emoji)}
-                      className={`p-2 rounded-xl transition-all ${
-                        newChildAvatar === avatar.emoji
-                          ? `bg-gradient-to-br ${avatarGradients[avatar.emoji] || "from-purple-200 to-pink-200"} shadow-md`
-                          : "bg-gray-50 hover:bg-gray-100"
-                      }`}
-                    >
-                      <span className="text-2xl">{avatar.emoji}</span>
-                    </button>
-                  ))}
+            <motion.div 
+              className="absolute inset-0 bg-wood-dark/30 backdrop-blur-sm"
+              onClick={() => setShowAddModal(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative card-storybook p-6 w-full max-w-sm shadow-warm-xl"
+            >
+              <h2 className="text-xl font-bold font-heading text-text-dark mb-4 text-center">
+                הוספת ילד/ה חדש/ה 🌟
+              </h2>
+              
+              <form onSubmit={handleCreateChild} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-dark mb-1.5 text-right">
+                    שם
+                  </label>
+                  <input
+                    type="text"
+                    value={newChildName}
+                    onChange={(e) => setNewChildName(e.target.value)}
+                    className="input-storybook text-right"
+                    placeholder="שם הילד/ה"
+                    required
+                  />
                 </div>
-              </div>
 
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-3 rounded-xl font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all"
-                >
-                  ביטול
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCreating || !newChildName.trim()}
-                  className="flex-1 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 disabled:opacity-50 transition-all"
-                >
-                  {isCreating ? "יוצר..." : "הוספה"}
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-sm font-medium text-text-dark mb-2 text-right">
+                    בחירת דמות
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {CHILD_AVATARS.map((avatar) => {
+                      const colors = avatarColors[avatar.emoji] || { bg: "bg-cream-100", border: "border-wood-light" };
+                      return (
+                        <button
+                          key={avatar.emoji}
+                          type="button"
+                          onClick={() => setNewChildAvatar(avatar.emoji)}
+                          className={`
+                            p-2.5 rounded-xl transition-all border-2
+                            ${newChildAvatar === avatar.emoji
+                              ? `${colors.bg} ${colors.border} shadow-warm`
+                              : "bg-cream-50 border-transparent hover:bg-cream-100"
+                            }
+                          `}
+                        >
+                          <span className="text-2xl block">{avatar.emoji}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    className="flex-1 btn-outline"
+                  >
+                    ביטול
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isCreating || !newChildName.trim()}
+                    className="flex-1 btn-primary"
+                  >
+                    {isCreating ? "יוצר..." : "הוספה 🌸"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </main>
   );
 }

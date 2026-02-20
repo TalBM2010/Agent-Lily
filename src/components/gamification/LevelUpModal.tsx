@@ -26,9 +26,9 @@ export function LevelUpModal({ level, previousLevel, onClose }: LevelUpModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Backdrop - warm overlay */}
       <div 
-        className="absolute inset-0 bg-purple-900/60 backdrop-blur-md"
+        className="absolute inset-0 bg-wood-dark/50 backdrop-blur-md"
         onClick={onClose}
       />
 
@@ -46,22 +46,22 @@ export function LevelUpModal({ level, previousLevel, onClose }: LevelUpModalProp
                 animationDuration: `${2.5 + Math.random() * 2}s`,
               }}
             >
-              {["🎉", "⭐", "✨", "🌟", "💫", "🎊", "💜"][Math.floor(Math.random() * 7)]}
+              {["🎉", "⭐", "✨", "🌟", "🌸", "🎊", "🌿", "🦋"][Math.floor(Math.random() * 8)]}
             </div>
           ))}
         </div>
       )}
 
-      {/* Modal content */}
+      {/* Modal content - Storybook style */}
       <div 
         className={`
-          relative card-magic p-8 max-w-sm w-full mx-4 
-          shadow-magic-lg
+          relative card-storybook p-8 max-w-sm w-full mx-4 
+          shadow-warm-xl border-3 border-wood-light
           ${showContent ? "animate-modal-pop" : "opacity-0 scale-75"}
         `}
       >
-        {/* Glow ring */}
-        <div className="absolute -inset-1 bg-magic rounded-[2rem] opacity-20 blur-xl animate-pulse" />
+        {/* Warm glow ring */}
+        <div className="absolute -inset-1 bg-sunshine rounded-[2rem] opacity-20 blur-xl animate-warm-glow" />
         
         <div className="relative">
           {/* Big emoji with animation */}
@@ -92,35 +92,35 @@ export function LevelUpModal({ level, previousLevel, onClose }: LevelUpModalProp
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl font-heading font-bold text-center text-magic mb-2">
+          <h2 className="text-3xl font-heading font-bold text-center text-garden-green-dark mb-2">
             כל הכבוד! 🎉
           </h2>
 
           {/* Level number */}
-          <p className="text-xl text-center text-purple-600 font-medium mb-4">
+          <p className="text-xl text-center text-text-medium font-medium mb-4">
             עלית לרמה {level.level}!
           </p>
           
           {/* Level name */}
-          <p className="text-2xl font-heading font-bold text-center text-purple-700 mb-6">
+          <p className="text-2xl font-heading font-bold text-center text-text-dark mb-6">
             {level.nameHe}
           </p>
 
           {/* Previous level transition */}
           {previousLevel && (
-            <div className="flex items-center justify-center gap-3 text-lg text-purple-400 mb-8">
+            <div className="flex items-center justify-center gap-3 text-lg text-text-light mb-8">
               <span>{previousLevel.emoji}</span>
               <span>{previousLevel.nameHe}</span>
               <span>→</span>
               <span>{level.emoji}</span>
-              <span className="text-purple-600 font-medium">{level.nameHe}</span>
+              <span className="text-text-dark font-medium">{level.nameHe}</span>
             </div>
           )}
 
           {/* Close button */}
           <button
             onClick={onClose}
-            className="w-full btn-magic text-xl py-4 animate-breathe"
+            className="w-full btn-primary text-xl py-4 animate-breathe"
           >
             יש! 🚀
           </button>

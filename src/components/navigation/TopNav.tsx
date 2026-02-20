@@ -44,7 +44,7 @@ export function TopNav({
         sticky top-0 z-40 safe-area-top
         ${transparent 
           ? "bg-transparent" 
-          : "bg-white/80 backdrop-blur-lg border-b border-purple-100"
+          : "bg-cream-50/90 backdrop-blur-lg border-b border-wood-light/30"
         }
       `}
     >
@@ -57,8 +57,8 @@ export function TopNav({
               className={`
                 p-2 rounded-full transition-colors
                 ${transparent 
-                  ? "bg-white/80 text-gray-700 hover:bg-white" 
-                  : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
+                  ? "bg-cream-50/80 text-text-dark hover:bg-cream-50" 
+                  : "text-text-medium hover:bg-cream-200 hover:text-garden-green-dark"
                 }
               `}
               whileTap={{ scale: 0.9 }}
@@ -72,7 +72,7 @@ export function TopNav({
         {title && (
           <h1 className={`
             text-lg font-bold font-heading
-            ${transparent ? "text-white drop-shadow-lg" : "text-gray-800"}
+            ${transparent ? "text-white drop-shadow-lg" : "text-text-dark"}
           `}>
             {title}
           </h1>
@@ -88,8 +88,8 @@ export function TopNav({
               className={`
                 p-2 rounded-full transition-colors
                 ${transparent 
-                  ? "bg-white/80 text-gray-700 hover:bg-white" 
-                  : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
+                  ? "bg-cream-50/80 text-text-dark hover:bg-cream-50" 
+                  : "text-text-medium hover:bg-cream-200 hover:text-garden-green-dark"
                 }
               `}
               whileTap={{ scale: 0.9 }}
@@ -104,8 +104,8 @@ export function TopNav({
               className={`
                 p-2 rounded-full transition-colors
                 ${transparent 
-                  ? "bg-white/80 text-gray-700 hover:bg-white" 
-                  : "text-gray-600 hover:bg-purple-50 hover:text-purple-600"
+                  ? "bg-cream-50/80 text-text-dark hover:bg-cream-50" 
+                  : "text-text-medium hover:bg-cream-200 hover:text-garden-green-dark"
                 }
               `}
               whileTap={{ scale: 0.9 }}
